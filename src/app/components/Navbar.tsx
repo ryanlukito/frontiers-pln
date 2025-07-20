@@ -12,7 +12,7 @@ const Navbar = () => {
     `hover:underline ${pathName === path ? "font-bold" : "font-normal"}`;
 
   return (
-    <div className="w-screen flex items-center justify-evenly bg-white text-black p-5">
+    <div className="w-screen sticky top-0 z-50 shadow-md flex items-center justify-evenly bg-white text-black p-5">
       <Image
         src="/frontiers.png"
         alt="logo"
@@ -20,7 +20,7 @@ const Navbar = () => {
         height={1000}
         className="w-[10%]"
       />
-      <Link className={linkClass("/DashboardPage")} href="/DashboardPage">
+      <Link className={linkClass("/DashboardPage")} href="/">
         DASHBOARD
       </Link>
       <Link className={linkClass("/ItemsPage")} href="/ItemsPage">
