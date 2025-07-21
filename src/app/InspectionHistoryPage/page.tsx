@@ -9,7 +9,7 @@ const InspectionHistoryPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center">
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-white text-black">
       <h1>Inspeksi Alat Pemadam Api Portabel </h1>
       <p>Formulir Inspeksi Alat Pemadam Api</p>
       <div>
@@ -22,7 +22,8 @@ const InspectionHistoryPage = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-row">
+        <div className="flex flex-row items-center justify-center gap-x-2">
+          <h1>ABC</h1>
           <Dropdown
             value={"Pilih Titik Lokasi"}
             onChange={(e) => console.log(e)}
