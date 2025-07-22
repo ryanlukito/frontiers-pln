@@ -9,20 +9,25 @@ const InspectionHistoryPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-white text-black">
-      <h1>Inspeksi Alat Pemadam Api Portabel </h1>
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-white text-black p-3">
+      <h1 className="p-3 rounded-md drop-shadow-2xl">
+        Inspeksi Alat Pemadam Api Portabel{" "}
+      </h1>
       <p>Formulir Inspeksi Alat Pemadam Api</p>
-      <div>
-        <div className="w-[70%] h-2"></div>
-        <div className="flex items-center justify-center">
+      <div className="w-[90%] flex flex-col items-center">
+        <div className="w-[80%] h-1 bg-black"></div>
+        <div className="w-full flex items-center justify-evenly">
           <h1>Elemen</h1>
           <h1>Status Inspeksi</h1>
         </div>
-        <div className="w-[70%] h-2"></div>
+        <div className="w-[80%] h-1 bg-black"></div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-row items-center justify-center gap-x-2">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full h-full flex flex-col items-center mt-3"
+      >
+        <div className="w-full flex flex-row items-center justify-evenly gap-x-2">
           <h1>ABC</h1>
           <Dropdown
             value={"Pilih Titik Lokasi"}
@@ -33,7 +38,9 @@ const InspectionHistoryPage = () => {
             ]}
           ></Dropdown>
         </div>
-        <button>Simpan Perubahan</button>
+        <button className="hover:cursor-pointer p-3 bg-[#51B5DD] rounded-full text-white">
+          Simpan Perubahan
+        </button>
       </form>
     </div>
   );

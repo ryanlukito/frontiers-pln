@@ -26,6 +26,40 @@ export interface TableProps {
   tableContent: TableItem[];
 }
 
+export interface FormData {
+  itemName: string;
+  serialNumber: string;
+  locationPoint: string;
+  locationId: string;
+  specification: string;
+  installationDate: string;
+  supplier: string;
+  pic: string;
+  installationStatus: "terpasang" | "belum_terpasang";
+  file: File | null;
+}
+
+export interface InputFieldProps {
+  name: keyof FormData;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  className?: string;
+}
+
+export interface RadioOptionProps {
+  name: keyof FormData;
+  value: string;
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+}
+
+export interface AddElementProps {
+  onClick: () => void;
+}
+
 export type PaginationReturn = {
   currentData: TableItem[];
   currentPage: number;

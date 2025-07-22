@@ -7,9 +7,11 @@ import Table from "../components/Table";
 import Navbar from "../components/Navbar";
 import Searchbar from "../components/Searchbar";
 import AddElement from "../components/AddElement";
+import AddElementModal from "../components/AddElementModal";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsOpenModal] = useState(false);
 
   const filteredData = tableContent.filter((item) =>
     Object.values(item).some((val) =>
@@ -31,6 +33,8 @@ const ItemsPage = () => {
     setCurrentPage(1);
   };
 
+  const toggleModal = () => setIsOpenModal(!isModalOpen);
+
   return (
     <div className="w-screen min-h-screen flex flex-col items-center bg-white text-black overflow-x-hidden">
       <Navbar />
@@ -39,7 +43,7 @@ const ItemsPage = () => {
           <h1>Inspection Element</h1>
           <div className="flex items-center justify-between w-full mb-3">
             <Searchbar value={searchTerm} onChange={handleSearch} />
-            <AddElement />
+            <AddElement onClick={toggleModal} />
           </div>
           <Table tableContent={currentData} />
         </div>
@@ -64,6 +68,20 @@ const ItemsPage = () => {
           </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-[80%] h-[70%]">
+            <button
+              onClick={toggleModal}
+              className="text-right w-full text-red-600 font-bold mb-4"
+            >
+              X
+            </button>
+            <AddElementModal />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

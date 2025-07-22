@@ -6,21 +6,21 @@ import { IoMdRadioButtonOn } from "react-icons/io";
 
 const AddElementModal = () => {
   return (
-    <div className="w-[75%] h-[70%]">
+    <div className="w-full h-full">
       <h1>
         <span className="font-bold">Tambah</span> Elemen Baru
       </h1>
-      <div className="flex items-center justify-between">
-        <Link href="/" className="">
-          <BsFillBox2Fill className="p-5 bg-[#32A38C]" />
+      <div className="flex items-center justify-evenly">
+        <Link href="/" className=" flex flex-col items-center justify-center">
+          <BsFillBox2Fill className="p-5 bg-[#32A38C] text-white text-9xl" />
           <h1>Item Baru</h1>
         </Link>
-        <Link href="/" className="">
-          <FaLocationDot className="p-5 bg-[#32A38C]" />
+        <Link href="/" className=" flex flex-col items-center justify-center">
+          <FaLocationDot className="p-5 bg-[#32A38C] text-white text-9xl" />
           <h1>Lokasi Baru</h1>
         </Link>
-        <Link href="/" className="">
-          <IoMdRadioButtonOn className="p-5 bg-[#32A38C]" />
+        <Link href="/" className=" flex flex-col items-center justify-center">
+          <IoMdRadioButtonOn className="p-5 bg-[#32A38C] text-white text-9xl" />
           <h1>Titik Lokasi Baru</h1>
         </Link>
       </div>
