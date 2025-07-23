@@ -1,7 +1,16 @@
-import React from "react";
-import { TableProps } from "../types/utils";
+"use client";
 
-const Table: React.FC<TableProps> = ({ tableContent }) => {
+import React from "react";
+import { TableItem, TableProps } from "../types/utils";
+
+interface UpdatedTableProps extends TableProps {
+  onOpenQrModal: (item: TableItem) => void;
+}
+
+const Table: React.FC<UpdatedTableProps> = ({
+  tableContent,
+  onOpenQrModal,
+}) => {
   return (
     <table className="table-auto border-collapse border border-gray-400 w-full">
       <thead className="bg-gray-200">
@@ -35,8 +44,15 @@ const Table: React.FC<TableProps> = ({ tableContent }) => {
             <td className="border px-4 py-2">{item.pic}</td>
             <td className="border px-4 py-2">{item.status}</td>
             <td className="border px-4 py-2">
-              <button>QR</button>
-              <button>Detail</button>
+              <button
+                onClick={() => onOpenQrModal(item)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
+              >
+                QR
+              </button>
+              <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded">
+                Detail
+              </button>
             </td>
           </tr>
         ))}
