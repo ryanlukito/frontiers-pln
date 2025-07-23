@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { TableProps } from "../types/utils";
 
 const Table: React.FC<TableProps> = ({ tableContent }) => {
@@ -36,8 +35,8 @@ const Table: React.FC<TableProps> = ({ tableContent }) => {
             <td className="border px-4 py-2">{item.pic}</td>
             <td className="border px-4 py-2">{item.status}</td>
             <td className="border px-4 py-2">
-              <Link href="/InspectionHistoryPage">QR</Link>
-              <button>LOG</button>
+              <button>QR</button>
+              <button>Detail</button>
             </td>
           </tr>
         ))}
