@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Dropdown from "../components/Dropdown";
+import Dropdown from "@/components/Dropdown";
 
 const InspectionHistoryPage = () => {
   const handleSubmit = () => {
