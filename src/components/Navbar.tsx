@@ -9,7 +9,9 @@ const Navbar = () => {
   const pathName = usePathname();
 
   const linkClass = (path: string) =>
-    `hover:underline ${pathName === path ? "font-bold" : "font-normal"}`;
+    `hover:underline hover:cursor-pointer ${
+      pathName === path ? "font-bold underline" : "font-normal"
+    }`;
 
   return (
     <div className="w-screen sticky top-0 z-50 shadow-md flex items-center justify-evenly bg-white text-black p-5">
@@ -26,7 +28,7 @@ const Navbar = () => {
       <Link className={linkClass("/ItemsPage")} href="/ItemsPage">
         ITEM
       </Link>
-      <Link className={linkClass("/SettingPage")} href="/SettingPage">
+      <Link className={linkClass("/SettingsPage")} href="/SettingsPage">
         SETTINGS
       </Link>
       <Link className={linkClass("/AccountPage")} href="/AccountPage">

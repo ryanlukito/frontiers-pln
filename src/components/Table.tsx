@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { TableProps } from "../types/utils";
 
 const Table: React.FC<TableProps> = ({ tableContent }) => {
@@ -17,6 +18,7 @@ const Table: React.FC<TableProps> = ({ tableContent }) => {
           <th className="border px-4 py-2">Pemasok</th>
           <th className="border px-4 py-2">PIC</th>
           <th className="border px-4 py-2">Status</th>
+          <th className="border px-4 py-2">Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -33,6 +35,10 @@ const Table: React.FC<TableProps> = ({ tableContent }) => {
             <td className="border px-4 py-2">{item.pemasok}</td>
             <td className="border px-4 py-2">{item.pic}</td>
             <td className="border px-4 py-2">{item.status}</td>
+            <td className="border px-4 py-2">
+              <Link href="/InspectionHistoryPage">QR</Link>
+              <button>LOG</button>
+            </td>
           </tr>
         ))}
       </tbody>
