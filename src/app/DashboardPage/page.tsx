@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Navbar from "@/components/Navbar";
-import Barchart from "@/components/Barchart";
-import RadialProgressChart from "@/components/RadialProgress";
+import Navbar from "../components/Navbar";
+import Barchart from "../components/Barchart";
+import RadialProgressChart from "../components/RadialProgress";
 
 const DashboardPage = () => {
   return (

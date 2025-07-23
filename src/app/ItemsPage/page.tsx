@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { tableContent } from "../../../data/dummy";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import Navbar from "@/components/Navbar";
-import Searchbar from "@/components/Searchbar";
+import Pagination from "../components/Pagination";
+import Table from "../components/Table";
+import Navbar from "../components/Navbar";
+import Searchbar from "../components/Searchbar";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
