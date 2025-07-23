@@ -8,10 +8,14 @@ import Navbar from "../../components/Navbar";
 import Searchbar from "../../components/Searchbar";
 import AddElement from "../../components/AddElement";
 import AddElementModal from "../../components/AddElementModal";
+import QRCodeModal from "@/components/QRCodeModal";
+import { TableItem } from "@/types/utils";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsOpenModal] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<TableItem | null>(null);
 
   const filteredData = tableContent.filter((item) =>
     Object.values(item).some((val) =>
@@ -33,7 +37,17 @@ const ItemsPage = () => {
     setCurrentPage(1);
   };
 
-  const toggleModal = () => setIsOpenModal(!isModalOpen);
+  const handleOpenQrModal = (item: TableItem) => {
+    setSelectedItem(item);
+    setIsQrModalOpen(true);
+  };
+
+  const handleCloseQrModal = () => {
+    setIsQrModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const toggleModal = () => setIsAddModalOpen(!isAddModalOpen);
 
   return (
     <div className="w-screen min-h-screen flex flex-col items-center bg-white text-black overflow-x-hidden">
@@ -45,7 +59,7 @@ const ItemsPage = () => {
             <Searchbar value={searchTerm} onChange={handleSearch} />
             <AddElement onClick={toggleModal} />
           </div>
-          <Table tableContent={currentData} />
+          <Table tableContent={currentData} onOpenQrModal={handleOpenQrModal} />
         </div>
 
         <div className="flex justify-between mt-4 w-full items-center">
@@ -69,7 +83,7 @@ const ItemsPage = () => {
         </div>
       </div>
 
-      {isModalOpen && (
+      {isAddModalOpen && (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-[80%] h-[70%]">
             <button
@@ -80,6 +94,12 @@ const ItemsPage = () => {
             </button>
             <AddElementModal />
           </div>
+        </div>
+      )}
+
+      {isQrModalOpen && selectedItem && (
+        <div className="fixed inset-0 w-screen h-screen bg-white z-50 flex flex-col items-center justify-center p-4">
+          <QRCodeModal item={selectedItem} onClose={handleCloseQrModal} />
         </div>
       )}
     </div>
