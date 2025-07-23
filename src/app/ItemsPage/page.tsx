@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { tableContent } from "../../../data/dummy";
-import Pagination from "../components/Pagination";
-import Table from "../components/Table";
-import Navbar from "../components/Navbar";
-import Searchbar from "../components/Searchbar";
-import AddElement from "../components/AddElement";
-import AddElementModal from "../components/AddElementModal";
+import Pagination from "../../components/Pagination";
+import Table from "../../components/Table";
+import Navbar from "../../components/Navbar";
+import Searchbar from "../../components/Searchbar";
+import AddElement from "../../components/AddElement";
+import AddElementModal from "../../components/AddElementModal";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");

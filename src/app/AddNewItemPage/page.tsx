@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { FormData } from "../types/utils";
+import { FormData } from "../../types/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
-import InputField from "../components/InputField";
-import RadioOption from "../components/RadioOptions";
+import InputField from "../../components/InputField";
+import RadioOption from "../../components/RadioOptions";
 
 const AddNewItemPage = () => {
   const [formData, setFormData] = useState<FormData>({
