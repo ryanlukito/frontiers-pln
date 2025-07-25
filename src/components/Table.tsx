@@ -5,59 +5,71 @@ import { TableItem, TableProps } from "../types/utils";
 
 interface UpdatedTableProps extends TableProps {
   onOpenQrModal: (item: TableItem) => void;
+  onOpenDetailModal: (item: TableItem) => void;
 }
 
 const Table: React.FC<UpdatedTableProps> = ({
   tableContent,
   onOpenQrModal,
+  onOpenDetailModal,
 }) => {
   return (
-    <table className="table-auto border-collapse border border-gray-400 w-full">
-      <thead className="bg-gray-200">
-        <tr>
-          <th className="border px-4 py-2">No</th>
-          <th className="border px-4 py-2">Nama Item</th>
-          <th className="border px-4 py-2">Jenis Sarana</th>
-          <th className="border px-4 py-2">Nomor Seri</th>
-          <th className="border px-4 py-2">Lokasi</th>
-          <th className="border px-4 py-2">Titik Lokasi</th>
-          <th className="border px-4 py-2">Spesifikasi</th>
-          <th className="border px-4 py-2">Tanggal Pembelian</th>
-          <th className="border px-4 py-2">Pemasok</th>
-          <th className="border px-4 py-2">PIC</th>
-          <th className="border px-4 py-2">Status</th>
-          <th className="border px-4 py-2">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tableContent.map((item, index) => (
-          <tr key={index}>
-            <td className="border px-4 py-2">{item.no}</td>
-            <td className="border px-4 py-2">{item.nama_item}</td>
-            <td className="border px-4 py-2">{item.jenis_sarana}</td>
-            <td className="border px-4 py-2">{item.nomor_seri}</td>
-            <td className="border px-4 py-2">{item.lokasi}</td>
-            <td className="border px-4 py-2">{item.titik_lokasi}</td>
-            <td className="border px-4 py-2">{item.spesifikasi}</td>
-            <td className="border px-4 py-2">{item.tanggal_pembelian}</td>
-            <td className="border px-4 py-2">{item.pemasok}</td>
-            <td className="border px-4 py-2">{item.pic}</td>
-            <td className="border px-4 py-2">{item.status}</td>
-            <td className="border px-4 py-2">
-              <button
-                onClick={() => onOpenQrModal(item)}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-              >
-                QR
-              </button>
-              <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded">
-                Detail
-              </button>
-            </td>
+    <div className="overflow-x-auto w-full rounded-lg shadow-md border border-gray-200">
+      <table className="min-w-full table-auto text-sm text-left text-gray-700">
+        <thead className="bg-gray-100 text-gray-800 uppercase text-xs font-semibold">
+          <tr>
+            <th className="px-4 py-3">No</th>
+            <th className="px-4 py-3">Nama Item</th>
+            <th className="px-4 py-3">Jenis Sarana</th>
+            <th className="px-4 py-3">Nomor Seri</th>
+            <th className="px-4 py-3">Lokasi</th>
+            <th className="px-4 py-3">Titik Lokasi</th>
+            <th className="px-4 py-3">Spesifikasi</th>
+            <th className="px-4 py-3">Tanggal Pembelian</th>
+            <th className="px-4 py-3">Pemasok</th>
+            <th className="px-4 py-3">PIC</th>
+            <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3 text-center">Aksi</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {tableContent.map((item, index) => (
+            <tr
+              key={index}
+              className={
+                index % 2 === 0 ? "bg-white" : "bg-gray-50 hover:bg-gray-100"
+              }
+            >
+              <td className="px-4 py-2">{item.no}</td>
+              <td className="px-4 py-2">{item.nama_item}</td>
+              <td className="px-4 py-2">{item.jenis_sarana}</td>
+              <td className="px-4 py-2">{item.nomor_seri}</td>
+              <td className="px-4 py-2">{item.lokasi}</td>
+              <td className="px-4 py-2">{item.titik_lokasi}</td>
+              <td className="px-4 py-2">{item.spesifikasi}</td>
+              <td className="px-4 py-2">{item.tanggal_pembelian}</td>
+              <td className="px-4 py-2">{item.pemasok}</td>
+              <td className="px-4 py-2">{item.pic}</td>
+              <td className="px-4 py-2">{item.status}</td>
+              <td className="px-4 py-2 flex justify-center gap-2">
+                <button
+                  onClick={() => onOpenQrModal(item)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition text-xs"
+                >
+                  QR
+                </button>
+                <button
+                  onClick={() => onOpenDetailModal(item)}
+                  className="px-3 py-1 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition text-xs"
+                >
+                  Detail
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

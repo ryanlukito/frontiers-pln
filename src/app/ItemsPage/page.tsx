@@ -9,12 +9,14 @@ import Searchbar from "../../components/Searchbar";
 import AddElement from "../../components/AddElement";
 import AddElementModal from "../../components/AddElementModal";
 import QRCodeModal from "@/components/QRCodeModal";
+import DetailModal from "@/components/DetailModal";
 import { TableItem } from "@/types/utils";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<TableItem | null>(null);
 
   const filteredData = tableContent.filter((item) =>
@@ -37,60 +39,73 @@ const ItemsPage = () => {
     setCurrentPage(1);
   };
 
-  const handleOpenQrModal = (item: TableItem) => {
-    setSelectedItem(item);
-    setIsQrModalOpen(true);
+  const handleModal = (
+    type: "qr" | "detail",
+    item: TableItem | null = null,
+    open: boolean = false
+  ) => {
+    if (type === "qr") {
+      setIsQrModalOpen(open);
+    } else {
+      setIsDetailModalOpen(open);
+    }
+    setSelectedItem(open ? item : null);
   };
-
-  const handleCloseQrModal = () => {
-    setIsQrModalOpen(false);
-    setSelectedItem(null);
-  };
-
-  const toggleModal = () => setIsAddModalOpen(!isAddModalOpen);
 
   return (
-    <div className="w-screen min-h-screen flex flex-col items-center bg-white text-black overflow-x-hidden">
+    <div className="w-screen min-h-screen flex flex-col bg-white text-black overflow-x-hidden">
       <Navbar />
-      <div className="p-4 w-full max-w-5xl flex flex-col items-center">
-        <div>
-          <h1>Inspection Element</h1>
-          <div className="flex items-center justify-between w-full mb-3">
-            <Searchbar value={searchTerm} onChange={handleSearch} />
-            <AddElement onClick={toggleModal} />
-          </div>
-          <Table tableContent={currentData} onOpenQrModal={handleOpenQrModal} />
+
+      <main className="w-full max-w-6xl mx-auto p-6 flex flex-col gap-4">
+        <h1 className="text-2xl font-bold mb-2 text-center">
+          Inspection Element
+        </h1>
+
+        {/* Search and Add Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+          <Searchbar value={searchTerm} onChange={handleSearch} />
+          <AddElement onClick={() => setIsAddModalOpen(true)} />
         </div>
 
-        <div className="flex justify-between mt-4 w-full items-center">
+        {/* Data Table */}
+        <Table
+          tableContent={currentData}
+          onOpenQrModal={(item) => handleModal("qr", item, true)}
+          onOpenDetailModal={(item) => handleModal("detail", item, true)}
+        />
+
+        {/* Pagination */}
+        <div className="flex justify-between items-center mt-6">
           <button
             onClick={goToPrevious}
             disabled={currentPage === 1}
-            className="px-4 py-2 hover:bg-gray-400 disabled:opacity-50 rounded hover:cursor-pointer text-white bg-[#08333C] hover:text-black"
+            className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-center">
-            Page {currentPage} of {totalPages}
+          <span className="text-sm text-gray-700">
+            Page <strong>{currentPage}</strong> of {totalPages}
           </span>
           <button
             onClick={goToNext}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-[#08333C] hover:bg-gray-400 disabled:opacity-50 rounded hover:cursor-pointer text-white hover:text-black"
+            className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
           >
             Next
           </button>
         </div>
-      </div>
+      </main>
 
+      {/* Modals */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-[80%] h-[70%]">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl p-6 relative">
             <button
-              onClick={toggleModal}
-              className="text-right w-full text-red-600 font-bold mb-4"
+              onClick={() => setIsAddModalOpen(false)}
+              className="absolute top-3 right-4 text-red-600 text-xl font-bold"
+              aria-label="Close modal"
             >
-              X
+              &times;
             </button>
             <AddElementModal />
           </div>
@@ -98,8 +113,20 @@ const ItemsPage = () => {
       )}
 
       {isQrModalOpen && selectedItem && (
-        <div className="fixed inset-0 w-screen h-screen bg-white z-50 flex flex-col items-center justify-center p-4">
-          <QRCodeModal item={selectedItem} onClose={handleCloseQrModal} />
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <QRCodeModal
+            item={selectedItem}
+            onClose={() => handleModal("qr", null, false)}
+          />
+        </div>
+      )}
+
+      {isDetailModalOpen && selectedItem && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <DetailModal
+            item={selectedItem}
+            onClose={() => handleModal("detail", null, false)}
+          />
         </div>
       )}
     </div>

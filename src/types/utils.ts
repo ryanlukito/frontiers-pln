@@ -20,6 +20,7 @@ export interface TableItem {
   pemasok: string;
   pic: string;
   status: string;
+  deskripsi: string;
 }
 
 export interface TableProps {
