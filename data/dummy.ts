@@ -11,6 +11,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "2",
@@ -24,6 +25,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "3",
@@ -37,6 +39,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "4",
@@ -50,6 +53,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "5",
@@ -63,6 +67,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "6",
@@ -76,6 +81,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "7",
@@ -89,6 +95,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "8",
@@ -102,6 +109,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "9",
@@ -115,6 +123,7 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
   {
     no: "10",
@@ -128,5 +137,6 @@ export const tableContent = [
     pemasok: "abc",
     pic: "abc",
     status: "abc",
+    deskripsi: "bcd",
   },
 ];

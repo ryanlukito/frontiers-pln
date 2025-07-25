@@ -2,6 +2,7 @@ import React from "react";
 import { IoMdClose } from "react-icons/io";
 import Image from "next/image";
 import { TableItem } from "@/types/utils";
+import Link from "next/link";
 
 interface QRCodeModalProps {
   item: TableItem;
@@ -10,26 +11,56 @@ interface QRCodeModalProps {
 
 const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative">
-      <IoMdClose className="absolute right-1 top-1" onClick={onClose} />
-      <button>Generate QR Code</button>
-      <div className="flex flex-row items-center justify-evenly p-4 border border-blue-500">
-        <div>QR Code</div>
-        <div className="flex flex-col items-start justify-evenly">
+    <div className="bg-white w-[90%] max-w-4xl h-[70%] rounded-xl p-6 flex flex-col items-center justify-between relative shadow-xl overflow-auto">
+      {/* Close Button */}
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl"
+        onClick={onClose}
+      >
+        <IoMdClose />
+      </button>
+
+      {/* Header */}
+      <button className="mb-4 px-6 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
+        Generate QR Code
+      </button>
+
+      {/* Content */}
+      <div className="flex flex-col md:flex-row items-center justify-evenly w-full gap-6">
+        <div className="w-48 h-48 flex items-center justify-center border border-gray-300 rounded-lg">
+          <span className="text-gray-500">QR Code Placeholder</span>
+        </div>
+        <div className="flex flex-col gap-2 text-sm">
           <Image
             src="/frontiers.png"
             alt="logo frontiers"
-            width={1000}
-            height={1000}
+            width={120}
+            height={120}
+            className="rounded-md"
           />
-          <h1>Name: {item?.nama_item}</h1>
-          <h1>S/N: {item?.nomor_seri}</h1>
-          <h1>Scan For Inspection and More Detail</h1>
+          <h1>
+            <span className="font-medium">Name:</span> {item?.nama_item}
+          </h1>
+          <h1>
+            <span className="font-medium">S/N:</span> {item?.nomor_seri}
+          </h1>
+          <h1 className="mt-2 text-gray-600">
+            Scan for inspection and more details
+          </h1>
         </div>
       </div>
-      <div className="flex flex-row items-center justify-evenly">
-        <button>Inspection Details</button>
-        <button>Form Inspeksi</button>
+
+      {/* Action Buttons */}
+      <div className="flex gap-4 mt-6">
+        <button className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
+          Inspection Details
+        </button>
+        <Link
+          href="/InspectionHistoryPage"
+          className="px-6 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition"
+        >
+          Form Inspeksi
+        </Link>
       </div>
     </div>
   );
