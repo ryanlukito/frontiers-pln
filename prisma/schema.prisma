@@ -14,15 +14,14 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
-  image         String?
-  role          Role      @default(STAFF)
-  emailVerified DateTime? @default(now()) @map("createdAt")
-  accounts      Account[]
-  sessions      Session[]
+  id             String   @id @default(cuid())
+  name           String?
+  email          String?  @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  role          Role     @default(STAFF)
+  accounts       Account[]
 }
 
 model Account {
@@ -31,24 +30,17 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
   access_token      String?
+  refresh_token     String?
   expires_at        Int?
   token_type        String?
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
