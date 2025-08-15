@@ -1,0 +1,335 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  image         String?
+  role          Role      @default(STAFF)
+  emailVerified DateTime? @default(now()) @map("createdAt")
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model item {
+  id_item                         Int                               @id @default(autoincrement())
+  lokasi_id                       Int                               @default(autoincrement())
+  jenis_sarana                    String?                           @db.VarChar
+  nama_item                       String?                           @db.VarChar
+  nomor_ser                       String?                           @db.VarChar
+  lokasi                          String?                           @db.VarChar
+  titik_lokasi                    String?                           @db.VarChar
+  spesifikasi                     String?                           @db.VarChar
+  tanggal_pembelian               DateTime?                         @db.Date
+  pemasok                         String?                           @db.VarChar
+  PIC                             String?                           @db.VarChar
+  gambar                          String?
+  status_pemasangan               Boolean?
+  id_titik_lokasi                 Int                               @default(autoincrement())
+  deskripsi                       String?                           @db.VarChar
+  is_deleted                      Boolean                           @default(false)
+  status                          ItemStatus
+  uploadedBy                      String
+  inspeksi_APAP                   inspeksi_APAP[]
+  inspeksi_detector               inspeksi_detector[]
+  inspeksi_hidran_bangunan        inspeksi_hidran_bangunan[]
+  inspeksi_hidran_halaman         inspeksi_hidran_halaman[]
+  inspeksi_kotak_p3k              inspeksi_kotak_p3k[]
+  inspeksi_ruang_mns              inspeksi_ruang_mns[]
+  inspeksi_rumah_pompa_hidran     inspeksi_rumah_pompa_hidran[]
+  inspeksi_sarana_jalan_keluar    inspeksi_sarana_jalan_keluar[]
+  inspeksi_scba                   inspeksi_scba[]
+  inspeksi_spill_containment_room inspeksi_spill_containment_room[]
+  inspeksi_sprinkler              inspeksi_sprinkler[]
+  inspeksi_fire_ball              inspeksi_fire_ball[]
+  inspeksi_cctv                   inspeksi_cctv[]
+  lokasi_titik_lokasi             titik_lokasi                      @relation(fields: [id_titik_lokasi], references: [id_titik_lokasi], onDelete: NoAction, onUpdate: NoAction)
+  nama_lokasi                     lokasi                            @relation(fields: [lokasi_id], references: [lokasi_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model lokasi {
+  lokasi_id    Int            @id @default(autoincrement())
+  nama_lokasi  String?        @unique @db.VarChar
+  item         item[]
+  titik_lokasi titik_lokasi[]
+}
+
+model inspeksi_sprinkler {
+  id_inspeksi                     Int      @id(map: "inspeksi sprinkler_pkey") @default(autoincrement())
+  kondisi_internal_pipa           Boolean
+  katup_kontrol                   Boolean
+  koneksi_pemadam_kebakaran       Boolean
+  penyangga                       Boolean
+  sprinkler_cadangan              Boolean
+  id_item                         Int
+  pipa_dan_perlengkapan           Boolean
+  tanda_informasi                 Boolean
+  tanda_informasi_desain_hidrolik Boolean
+  gambar                          String?
+  createdAt                       DateTime @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                            item     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction, map: "inspeksi sprinkler_id_item_fkey")
+}
+
+model inspeksi_APAP {
+  id_inspeksi          Int       @id @default(autoincrement())
+  kesesuaian_lokasi    Boolean?
+  visibilitas          Boolean?
+  kemudahan_akses      Boolean?
+  tekanan              Boolean?
+  kepenuhan_isi        Boolean?
+  segel_pengaman       Boolean?
+  selang_dan_nozel     Boolean?
+  abnormalitas_fisik   Boolean?
+  karetban_roda_dan_kereta Boolean?
+  kadaluwarsa          Boolean?
+  id_item              Int?
+  gambar               String?
+  createdAt            DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                 item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_detector {
+  id_inspeksi         Int       @id @default(autoincrement())
+  penghalang_detektor Boolean?
+  kerusakan_fisik     Boolean?
+  audible_dan_visible Boolean?
+  lampu               Boolean?
+  power_supply        Boolean?
+  prosedur_manufaktur Boolean?
+  id_item             Int?
+  derajat_kebersihan  Boolean?
+  lokasi              Boolean?
+  gambar              String?
+  createdAt           DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_hidran_bangunan {
+  id_inspeksi                      Int       @id @default(autoincrement())
+  tanda_informasi_desain_hidraulik Boolean?
+  koneksi_selang                   Boolean?
+  perpipaan                        Boolean?
+  selang                           Boolean?
+  nozel                            Boolean?
+  perangkat_penyimpan_selang       Boolean?
+  kabinet_penyimpanan              Boolean?
+  id_item                          Int?
+  gambar                           String?
+  createdAt                        DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                             item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_hidran_halaman {
+  id_inspeksi                     Int       @id @default(autoincrement())
+  kemudahan_akses                 Boolean?
+  outlet_bagian_atas_hidran_pilar Boolean?
+  batang_pilar                    Boolean?
+  outlet                          Boolean?
+  nozel                           Boolean?
+  mur_pengoperasian               Boolean?
+  ketersediaan_kunci_hidran       Boolean?
+  id_item                         Int?
+  gambar                          String?
+  createdAt                       DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                            item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_kotak_p3k {
+  id_inspeksi             Int       @id @default(autoincrement())
+  perban                  Boolean?
+  plester                 Boolean?
+  kapas                   Boolean?
+  gunting_peniti_pinset   Boolean?
+  sarung_tangan_masker    Boolean?
+  gelas_kecil             Boolean?
+  aquades                 Boolean?
+  povidon_iodin           Boolean?
+  kantong_plastik         Boolean?
+  buku_panduan_daftar_isi Boolean?
+  id_item                 Int?
+  kasa_steril_terbungkus  Boolean?
+  gambar                  String?
+  createdAt               DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                    item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_ruang_mns {
+  id_inspeksi                  Int       @id @default(autoincrement())
+  antena                       Boolean?
+  transceiver                  Boolean?
+  backup                       Boolean?
+  ventilasi                    Boolean?
+  penyampai_visual             Boolean?
+  monitoring_personel          Boolean?
+  audibilitas                  Boolean?
+  peralatan_notifikasi         Boolean?
+  aktivasi_notifikasi_massal   Boolean?
+  penyediaan_alat              Boolean?
+  kapabilitas_komunikasi       Boolean?
+  daya_sekunder                Boolean?
+  ketersediaan_alat_komunikasi Boolean?
+  id_item                      Int?
+  daya_cadangan                Boolean?
+  konektivitas_komunikasi      Boolean?
+  gambar                       String?
+  createdAt                    DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                         item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_rumah_pompa_hidran {
+  id_inspeksi                             Int       @id @default(autoincrement())
+  pencahayaan_normal                      Boolean?
+  pencahayaan_darurat                     Boolean?
+  ventilasi                               Boolean?
+  sistem_drainase                         Boolean?
+  pagar_pelindung_penggerak               Boolean?
+  sistem_pompa                            Boolean?
+  daya_listrik_pompa                      Boolean?
+  motor_penggerak                         Boolean?
+  baterai                                 Boolean?
+  penyediaan_bahan_bakar                  Boolean?
+  buku_petunjuk_perkakas_khusus_sparepart Boolean?
+  id_item                                 Int?
+  gambar                                  String?
+  createdAt                               DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                                    item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_sarana_jalan_keluar {
+  id_inspeksi         Int       @id @default(autoincrement())
+  akses_eksit         Boolean?
+  eksit               Boolean?
+  pintu_eksit         Boolean?
+  eksit_pelepasan     Boolean?
+  iluminasi           Boolean?
+  pencahayaan_darurat Boolean?
+  penandaan           Boolean?
+  tangga_kebakaran    Boolean?
+  assembly_point      Boolean?
+  id_item             Int?
+  gambar              String?
+  createdAt           DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_fire_ball{
+  id_inspeksi              Int       @id @default(autoincrement())
+  posisi_penempatan        Boolean?
+  kadaluwarsa              Boolean?
+  kondisi_fisik_bola       Boolean?
+  besi_penggantung         Boolean?
+  area_jangkauan           Boolean?
+  id_item              Int?
+  gambar               String?
+  createdAt            DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                 item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_cctv{
+  id_inspeksi Int       @id @default(autoincrement())
+  posisi Boolean?
+  arah_kamera Boolean?
+  koneksi_daya_dan_jaringan Boolean?
+  kualitas_gambar           Boolean?
+  bebas_dari_halangan       Boolean?
+  kondisi_fisik Boolean?
+  id_item              Int?
+  gambar               String?
+  createdAt            DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                 item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_scba {
+  id_inspeksi            Int       @id @default(autoincrement())
+  facepiece              Boolean?
+  rangka_rakitan_harness Boolean?
+  silinder_tabung        Boolean?
+  selang                 Boolean?
+  EOSTI                  Boolean?
+  regulator              Boolean?
+  id_item                Int?
+  gambar                 String?
+  createdAt              DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                   item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model inspeksi_spill_containment_room {
+  id_inspeksi                           Int       @id @default(autoincrement())
+  fasilitas                             Boolean?
+  sistem_keamanan                       Boolean?
+  sistem_pencegahan_kebakaran           Boolean?
+  sistem_pencegahan_tumpahan_limbah     Boolean?
+  sistem_penanggulangan_keadaan_darurat Boolean?
+  id_item                               Int?
+  gambar                                String?
+  createdAt                             DateTime? @map("createdAt") @db.Timestamptz(6) @default(now())
+  item                                  item?     @relation(fields: [id_item], references: [id_item], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model titik_lokasi {
+  id_titik_lokasi   Int     @id(map: "titik lokasi_pkey") @default(autoincrement())
+  lokasi_id         Int     @default(autoincrement())
+  nama_titik_lokasi String? @unique @db.VarChar
+  item              item[]
+  lokasi            lokasi  @relation(fields: [lokasi_id], references: [lokasi_id], onDelete: Cascade, onUpdate: NoAction, map: "titik lokasi_lokasi_id_fkey")
+}
+
+enum Role {
+  ADMIN
+  PELAKSANA
+  STAFF
+}
+
+enum ItemStatus {
+  APPROVED
+  PENDING
+  REJECTED
+}
