@@ -1,9 +1,36 @@
+"use client"; 
+
 import React from "react";
 import Image from "next/image";
 import logo from "../../../public/frontiers.png";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+      callbackUrl: "/DashboardPage",
+    });
+
+    if (result?.error) {
+      setErrorMsg(result.error);
+    } else {
+      router.push("/DashboardPage");
+    }
+  }
   return (
     <div className="w-screen min-h-screen flex items-center justify-center bg-gray-50 text-gray-900">
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-8">
@@ -14,7 +41,7 @@ const LoginPage = () => {
         </div>
 
         {/* Form */}
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div>
             <label
               htmlFor="email"
@@ -26,6 +53,7 @@ const LoginPage = () => {
               id="email"
               type="email"
               placeholder="you@example.com"
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
@@ -41,6 +69,7 @@ const LoginPage = () => {
               id="password"
               type="password"
               placeholder="••••••••"
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
@@ -54,6 +83,8 @@ const LoginPage = () => {
               Forgot password?
             </a>
           </div>
+
+          {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
 
           <button
             type="submit"
