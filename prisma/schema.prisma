@@ -322,6 +322,7 @@ enum Role {
   ADMIN
   PELAKSANA
   STAFF
+  USER
 }
 
 enum ItemStatus {
