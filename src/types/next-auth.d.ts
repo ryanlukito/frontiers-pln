@@ -27,5 +27,6 @@ declare module "next-auth/jwt" {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    role: "ADMIN" | "STAFF" | "PELAKSANA"; // Assuming these are the roles you have
   }
 }

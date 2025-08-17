@@ -1,46 +1,134 @@
 "use client";
 
-import { useState } from "react";
-import { FormData } from "../../types/utils";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import InputField from "../../components/InputField";
 import RadioOption from "../../components/RadioOptions";
+import { Lokasi } from "@/types/utils";
+import { useSession } from "next-auth/react";
 
 const AddNewItemPage = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const { data: session } = useSession();
+  console.log("Session Data: ", session);
+  const [formData, setFormData] = useState({
     itemName: "",
     serialNumber: "",
     locationPoint: "",
     locationId: "",
     specification: "",
-    installationDate: "",
+    purchaseDate: "",
+    expiryDate: "",
+    weight: "",
+    apapType: "",
     supplier: "",
     pic: "",
-    installationStatus: "terpasang",
-    file: null,
+    installationStatus: "Terpasang",
+    jenisSarana: "",
+    file: null as File | null,
   });
 
-  // Handler for input changes with typed events
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file") {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: files ? files[0] : null,
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [lokasiList, setLokasiList] = useState<Lokasi[]>([]);
+  const [selectedLokasi, setSelectedLokasi] = useState<string>("");
+
+  useEffect(() => {
+    const fetchLokasi = async () => {
+      try {
+        const res = await fetch("/api/lokasi", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) throw new Error("Failed to fetch lokasi");
+        const data = await res.json();
+        setLokasiList(data);
+      } catch (error) {
+        console.error("Error fetching lokasi:", error);
+        setMessage("Gagal memuat daftar lokasi");
+      }
+    };
+
+    fetchLokasi();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const target = e.target;
+
+    // 🔹 Input type file
+    if (target instanceof HTMLInputElement && target.type === "file") {
+      const { name, files } = target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files && files[0] ? files[0] : null,
       }));
-    } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
+      return;
     }
+
+    // 🔹 Lainnya
+    const { name, value } = target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handler for form submission with typed events
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In a real Next.js app, you would typically send this to an API route
-    // For example: await fetch('/api/items', { method: 'POST', body: JSON.stringify(formData) });
-    console.log("Form Submitted:", formData);
-    // You would replace alert with a proper notification system (e.g., react-hot-toast)
-    alert("Form submitted! Check the console for the data.");
+    setMessage(null);
+    setLoading(true);
+
+    try {
+      const payload = {
+        nama_item: formData.itemName,
+        nomor_ser: formData.serialNumber,
+        lokasi_id: formData.locationId,
+        id_titik_lokasi: formData.locationPoint,
+        spesifikasi: formData.specification,
+        tanggal_pembelian: formData.purchaseDate || null,
+        tanggal_kadaluwarsa:
+          formData.jenisSarana === "APAP" ? formData.expiryDate : null,
+        berat: formData.jenisSarana === "APAP" ? formData.weight : null,
+        jenis_APAP: formData.jenisSarana === "APAP" ? formData.apapType : null,
+        pemasok: formData.supplier,
+        PIC: formData.pic,
+        status_pemasangan: formData.installationStatus,
+        jenis_sarana: formData.jenisSarana,
+        gambar: formData.file ? formData.file.name : null, // 🚨 simplifikasi
+      };
+
+      const res = await fetch("/api/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage(data.error || "Gagal menyimpan item");
+      } else {
+        setMessage("✅ Item berhasil disimpan!");
+        setFormData({
+          itemName: "",
+          serialNumber: "",
+          locationPoint: "",
+          locationId: "",
+          specification: "",
+          purchaseDate: "",
+          expiryDate: "",
+          weight: "",
+          apapType: "",
+          supplier: "",
+          pic: "",
+          installationStatus: "Terpasang",
+          jenisSarana: "",
+          file: null,
+        });
+        setSelectedLokasi("");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("🔥 Terjadi kesalahan server");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,8 +137,9 @@ const AddNewItemPage = () => {
         <h1 className="text-2xl font-bold mb-6 text-gray-800">
           Tambah Item Baru
         </h1>
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Item Name Input */}
+          {/* Nama Item */}
           <InputField
             name="itemName"
             placeholder="Nama Item"
@@ -58,7 +147,7 @@ const AddNewItemPage = () => {
             onChange={handleChange}
           />
 
-          {/* Serial Number Input */}
+          {/* Nomor Seri */}
           <InputField
             name="serialNumber"
             placeholder="Nomor Seri"
@@ -66,23 +155,125 @@ const AddNewItemPage = () => {
             onChange={handleChange}
           />
 
-          {/* Location Point Input */}
-          <InputField
-            name="locationPoint"
-            placeholder="Titik Lokasi"
-            value={formData.locationPoint}
-            onChange={handleChange}
-          />
+          {/* Lokasi */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Pilih Lokasi
+            </label>
+            <select
+              name="locationId"
+              value={formData.locationId}
+              onChange={(e) => {
+                handleChange(e);
+                setSelectedLokasi(e.target.value);
+                setFormData((prev) => ({ ...prev, locationPoint: "" }));
+              }}
+              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              required
+            >
+              <option value="" disabled hidden>
+                Pilih Lokasi
+              </option>
+              {lokasiList.map((lokasi) => (
+                <option key={lokasi.lokasi_id} value={lokasi.lokasi_id}>
+                  {lokasi.nama_lokasi}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {/* Location ID Input */}
-          <InputField
-            name="locationId"
-            placeholder="ID Lokasi"
-            value={formData.locationId}
-            onChange={handleChange}
-          />
+          {/* Titik Lokasi */}
+          {selectedLokasi && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pilih Titik Lokasi
+              </label>
+              <select
+                name="locationPoint"
+                value={formData.locationPoint}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                required
+              >
+                <option value="" disabled hidden>
+                  Pilih Titik Lokasi
+                </option>
+                {lokasiList
+                  .find(
+                    (lokasi) =>
+                      String(lokasi.lokasi_id) === String(selectedLokasi)
+                  )
+                  ?.titik_lokasi.map((titik) => (
+                    <option
+                      key={titik.id_titik_lokasi}
+                      value={titik.id_titik_lokasi}
+                    >
+                      {titik.nama_titik_lokasi}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
 
-          {/* Specification Input */}
+          {/* Jenis Sarana */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Jenis Sarana
+            </label>
+            <select
+              name="jenisSarana"
+              value={formData.jenisSarana}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              required
+            >
+              <option value="" disabled hidden>
+                Pilih jenis sarana
+              </option>
+              <option value="APAP">APAP</option>
+              <option value="LAINNYA">Lainnya</option>
+            </select>
+          </div>
+
+          {/* Jika jenis sarana = APAP → tampilkan field tambahan */}
+          {formData.jenisSarana === "APAP" && (
+            <>
+              <InputField
+                name="expiryDate"
+                type="date"
+                placeholder="Tanggal Kadaluwarsa"
+                value={formData.expiryDate}
+                onChange={handleChange}
+              />
+              <InputField
+                name="weight"
+                type="number"
+                placeholder="Berat (kg)"
+                value={formData.weight}
+                onChange={handleChange}
+              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jenis APAP
+                </label>
+                <select
+                  name="apapType"
+                  value={formData.apapType}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                >
+                  <option value="" disabled hidden>
+                    Pilih jenis APAP
+                  </option>
+                  <option value="GAS_CAIR_NON_HALON">Gas Cair Non-Halon</option>
+                  <option value="POWDER">Powder</option>
+                  <option value="CO2">CO2</option>
+                  <option value="LITHIUM">Lithium</option>
+                </select>
+              </div>
+            </>
+          )}
+
           <InputField
             name="specification"
             placeholder="Spesifikasi"
@@ -90,20 +281,14 @@ const AddNewItemPage = () => {
             onChange={handleChange}
           />
 
-          {/* Date Input */}
-          <div className="relative">
-            <InputField
-              name="installationDate"
-              placeholder="MM/DD/YY"
-              value={formData.installationDate}
-              onChange={handleChange}
-              type="date"
-              className="pr-10"
-            />
-            <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-          </div>
+          <InputField
+            name="purchaseDate"
+            type="date"
+            placeholder="Tanggal Pembelian"
+            value={formData.purchaseDate}
+            onChange={handleChange}
+          />
 
-          {/* Supplier Input */}
           <InputField
             name="supplier"
             placeholder="Pemasok"
@@ -111,7 +296,6 @@ const AddNewItemPage = () => {
             onChange={handleChange}
           />
 
-          {/* PIC Input */}
           <InputField
             name="pic"
             placeholder="PIC"
@@ -119,7 +303,7 @@ const AddNewItemPage = () => {
             onChange={handleChange}
           />
 
-          {/* Installation Status Radio Buttons */}
+          {/* Status Pemasangan */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Status Pemasangan:
@@ -127,22 +311,22 @@ const AddNewItemPage = () => {
             <div className="flex items-center space-x-6">
               <RadioOption
                 name="installationStatus"
-                value="terpasang"
-                checked={formData.installationStatus === "terpasang"}
+                value="Terpasang"
+                checked={formData.installationStatus === "Terpasang"}
                 onChange={handleChange}
                 label="Terpasang"
               />
               <RadioOption
                 name="installationStatus"
-                value="belum_terpasang"
-                checked={formData.installationStatus === "belum_terpasang"}
+                value="Belum Terpasang"
+                checked={formData.installationStatus === "Belum Terpasang"}
                 onChange={handleChange}
                 label="Belum Terpasang"
               />
             </div>
           </div>
 
-          {/* File Input */}
+          {/* File Upload */}
           <div className="flex items-center space-x-4">
             <label
               htmlFor="file-upload"
@@ -162,14 +346,18 @@ const AddNewItemPage = () => {
             </span>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#32A38C] text-white font-bold py-3 px-4 rounded-md hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2"
+            disabled={loading}
+            className="w-full bg-[#32A38C] text-white font-bold py-3 px-4 rounded-md hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50"
           >
-            Submit
+            {loading ? "Menyimpan..." : "Submit"}
           </button>
         </form>
+
+        {message && (
+          <p className="text-center text-sm mt-4 text-red-500">{message}</p>
+        )}
       </div>
     </div>
   );

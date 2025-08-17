@@ -36,9 +36,16 @@ export interface FormData {
   installationDate: string;
   supplier: string;
   pic: string;
-  installationStatus: "terpasang" | "belum_terpasang";
+  installationStatus: string;
   file: File | null;
+
+  // 🔹 Tambahan untuk APAP
+  expiryDate?: string;
+  weight?: string;
+  purchaseDate?: string;
+  apapType?: "GAS_CAIR_NON_HALON" | "POWDER" | "CO2" | "LITHIUM";
 }
+
 
 export interface InputFieldProps {
   name: keyof FormData;
@@ -74,3 +81,16 @@ export interface SearchbarProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+export type TitikLokasi = {
+  id_titik_lokasi: number;
+  nama_titik_lokasi: string;
+  lokasi_id: number;
+};
+
+export type Lokasi = {
+  lokasi_id: number;
+  nama_lokasi: string;
+  titik_lokasi: TitikLokasi[];
+};
+
