@@ -62,9 +62,9 @@ model item {
   titik_lokasi                    String?                           @db.VarChar
   spesifikasi                     String?                           @db.VarChar
   tanggal_pembelian               DateTime?                         @db.Date
-  tanggal_kadaluwarsa             DateTime?                         @db.Date
-  berat                           Float?
-  jenis_APAP                      JenisAPAP?                           
+  tanggal_kadaluwarsa             DateTime?                         @db.Date //Khusus APAP
+  berat                           Float? //Khusus APAP
+  jenis_APAP                      JenisAPAP?           //Khusus APAP                 
   pemasok                         String?                           @db.VarChar
   PIC                             String?                           @db.VarChar
   gambar                          String?
@@ -322,6 +322,7 @@ enum Role {
   ADMIN
   PELAKSANA
   STAFF
+  USER
 }
 
 enum ItemStatus {

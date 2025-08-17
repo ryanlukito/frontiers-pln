@@ -36,7 +36,13 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Password salah.');
         }
 
-        return user;
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role as "ADMIN" | "PELAKSANA" | "STAFF",
+        };
       },
     }),
   ],
@@ -66,6 +72,7 @@ export const authOptions: NextAuthOptions = {
           session.user.role = "STAFF"; 
         }
       }
+      console.log("Session Callback: ", session);
       return session;
     },
   },

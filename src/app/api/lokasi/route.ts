@@ -55,3 +55,21 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
+
+
+// GET semua lokasi beserta titik_lokasi
+export async function GET() {
+  try {
+    const lokasi = await prisma.lokasi.findMany({
+      include: {
+        titik_lokasi: true, // join titik_lokasi
+      },
+    });
+
+    return NextResponse.json(lokasi);
+  } catch (err) {
+    console.error("🔥 Error fetch lokasi:", err);
+    return NextResponse.json({ error: "Failed to fetch lokasi" }, { status: 500 });
+  }
+}
+
