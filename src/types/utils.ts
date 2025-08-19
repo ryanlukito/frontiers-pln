@@ -1,3 +1,5 @@
+import { DateTime } from "next-auth/providers/kakao";
+
 export type RadialProgressChartProps = {
   percentage: number;
 };
@@ -16,7 +18,7 @@ export interface TableItem {
   lokasi: string;
   titik_lokasi: string;
   spesifikasi: string;
-  tanggal_pembelian: string;
+  tanggal_pembelian: DateTime;
   pemasok: string;
   pic: string;
   status: string;
