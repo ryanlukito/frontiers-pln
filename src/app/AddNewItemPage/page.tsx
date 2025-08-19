@@ -76,28 +76,38 @@ const AddNewItemPage = () => {
     setLoading(true);
 
     try {
-      const payload = {
-        nama_item: formData.itemName,
-        nomor_ser: formData.serialNumber,
-        lokasi_id: formData.locationId,
-        id_titik_lokasi: formData.locationPoint,
-        spesifikasi: formData.specification,
-        tanggal_pembelian: formData.purchaseDate || null,
-        tanggal_kadaluwarsa:
-          formData.jenisSarana === "APAP" ? formData.expiryDate : null,
-        berat: formData.jenisSarana === "APAP" ? formData.weight : null,
-        jenis_APAP: formData.jenisSarana === "APAP" ? formData.apapType : null,
-        pemasok: formData.supplier,
-        PIC: formData.pic,
-        status_pemasangan: formData.installationStatus,
-        jenis_sarana: formData.jenisSarana,
-        gambar: formData.file ? formData.file.name : null, // 🚨 simplifikasi
-      };
+      const formDataToSend = new FormData();
+
+      formDataToSend.append("nama_item", formData.itemName);
+      formDataToSend.append("nomor_ser", formData.serialNumber);
+      formDataToSend.append("lokasi_id", formData.locationId);
+      formDataToSend.append("id_titik_lokasi", formData.locationPoint);
+      formDataToSend.append("spesifikasi", formData.specification);
+      formDataToSend.append("tanggal_pembelian", formData.purchaseDate || "");
+      formDataToSend.append(
+        "tanggal_kadaluwarsa",
+        formData.jenisSarana === "APAP" ? formData.expiryDate || "" : ""
+      );
+      formDataToSend.append(
+        "berat",
+        formData.jenisSarana === "APAP" ? formData.weight || "" : ""
+      );
+      formDataToSend.append(
+        "jenis_APAP",
+        formData.jenisSarana === "APAP" ? formData.apapType || "" : ""
+      );
+      formDataToSend.append("pemasok", formData.supplier);
+      formDataToSend.append("PIC", formData.pic);
+      formDataToSend.append("status_pemasangan", formData.installationStatus);
+      formDataToSend.append("jenis_sarana", formData.jenisSarana);
+
+      if (formData.file) {
+        formDataToSend.append("gambar", formData.file); // ✅ file asli, bukan cuma nama
+      }
 
       const res = await fetch("/api/items", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formDataToSend, // ✅ jangan kasih Content-Type manual
       });
 
       const data = await res.json();
@@ -130,6 +140,7 @@ const AddNewItemPage = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
