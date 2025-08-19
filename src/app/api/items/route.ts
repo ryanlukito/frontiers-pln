@@ -2,6 +2,8 @@ import { NextRequest,NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
+import supabase from "@/lib/supabase";
+import { JenisAPAP, ItemStatus } from "@prisma/client"
 
 export async function GET() {
   try {
@@ -45,15 +47,24 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const formData = await req.formData();
+
+    // 🔹 convert FormData -> object text
+    const body: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      if (typeof value === "string") {
+        body[key] = value;
+      }
+    });
+
     console.log("📥 Received Data:", body);
 
     if (!body.nama_item || !body.nomor_ser || !body.lokasi_id || !body.id_titik_lokasi) {
       return NextResponse.json({ error: "Field tidak boleh kosong" }, { status: 400 });
     }
 
-    let lokasiId = body.lokasi_id;
-    let titikLokasiId = body.id_titik_lokasi;
+    let lokasiId: number | string = body.lokasi_id;
+    let titikLokasiId: number | string = body.id_titik_lokasi;
 
     // 🔹 Lokasi baru
     if (body.lokasi_id === "new" && body.new_lokasi_name) {
@@ -61,14 +72,10 @@ export async function POST(req: NextRequest) {
         where: { nama_lokasi: { equals: body.new_lokasi_name.trim(), mode: "insensitive" } },
       });
 
-      if (existingLokasi) {
-        lokasiId = existingLokasi.lokasi_id;
-      } else {
-        const newLokasi = await prisma.lokasi.create({
-          data: { nama_lokasi: body.new_lokasi_name.trim() },
-        });
-        lokasiId = newLokasi.lokasi_id;
-      }
+      lokasiId = existingLokasi
+        ? existingLokasi.lokasi_id
+        : (await prisma.lokasi.create({ data: { nama_lokasi: body.new_lokasi_name.trim() } }))
+            .lokasi_id;
     }
 
     // 🔹 Titik lokasi baru
@@ -76,33 +83,57 @@ export async function POST(req: NextRequest) {
       const existingTitikLokasi = await prisma.titik_lokasi.findFirst({
         where: {
           nama_titik_lokasi: { equals: body.new_titik_lokasi_name.trim(), mode: "insensitive" },
-          lokasi_id: lokasiId,
+          lokasi_id: Number(lokasiId),
         },
       });
 
-      if (existingTitikLokasi) {
-        titikLokasiId = existingTitikLokasi.id_titik_lokasi;
-      } else {
-        const newTitikLokasi = await prisma.titik_lokasi.create({
-          data: {
-            nama_titik_lokasi: body.new_titik_lokasi_name.trim(),
-            lokasi_id: lokasiId,
-          },
-        });
-        titikLokasiId = newTitikLokasi.id_titik_lokasi;
-      }
+      titikLokasiId = existingTitikLokasi
+        ? existingTitikLokasi.id_titik_lokasi
+        : (
+            await prisma.titik_lokasi.create({
+              data: {
+                nama_titik_lokasi: body.new_titik_lokasi_name.trim(),
+                lokasi_id: Number(lokasiId),
+              },
+            })
+          ).id_titik_lokasi;
     }
 
     // 🔹 Auth check
     const session = await getServerSession(authOptions);
-    console.log("Session : ", session);
     if (!session) {
       return NextResponse.json({ error: "User is Not Logged In!" }, { status: 401 });
     }
 
     const uploadedBy = session.user.email;
 
-    // 🔹 Insert item
+    // 🔹 Upload file gambar ke Supabase Storage
+    let imageUrl: string | null = null;
+    const file = formData.get("gambar") as File | null;
+
+    if (file) {
+      const bucket = "images";
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const filePath = `item-image/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("❌ Upload error:", uploadError);
+        return NextResponse.json({ error: uploadError.message }, { status: 500 });
+      }
+
+      const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+      imageUrl = publicUrlData.publicUrl;
+    }
+
+    // 🔹 Insert item pakai Prisma
     const newItem = await prisma.item.create({
       data: {
         nama_item: body.nama_item,
@@ -114,12 +145,12 @@ export async function POST(req: NextRequest) {
         spesifikasi: body.spesifikasi || "",
         tanggal_pembelian: body.tanggal_pembelian ? new Date(body.tanggal_pembelian) : null,
         tanggal_kadaluwarsa: body.tanggal_kadaluwarsa ? new Date(body.tanggal_kadaluwarsa) : null,
-        berat: parseFloat(body.berat) || null,
-        jenis_APAP: body.jenis_APAP || null,
+        berat: body.berat ? parseFloat(body.berat) : null,
+        jenis_APAP: body.jenis_APAP ? (body.jenis_APAP as JenisAPAP) : null, // ✅ cast enum
         pemasok: body.pemasok,
         PIC: body.PIC,
-        gambar: body.gambar || null,
-        status: body.status || "PENDING",
+        gambar: imageUrl,
+        status: (body.status as ItemStatus) || ItemStatus.PENDING, // ✅ cast enum
         status_pemasangan: body.status_pemasangan === "Terpasang",
         uploadedBy: uploadedBy || "Unknown User",
       },
@@ -133,3 +164,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+
