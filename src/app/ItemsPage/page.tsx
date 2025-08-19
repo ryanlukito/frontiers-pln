@@ -57,6 +57,7 @@ const ItemsPage = () => {
       try {
         const res = await fetch("/api/items");
         const data = await res.json();
+        console.log("data dari be", data)
 
         if (data.success) {
           const mapped: TableItem[] = data.items.map(
