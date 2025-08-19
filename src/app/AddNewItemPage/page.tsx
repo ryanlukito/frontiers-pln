@@ -6,6 +6,22 @@ import RadioOption from "../../components/RadioOptions";
 import { Lokasi } from "@/types/utils";
 import { useSession } from "next-auth/react";
 
+const jenisSarana = [
+  {nama: "APAP", value: "APAP" }, 
+  {nama: "SCBA", value: "SCBA" }, 
+  {nama: "Sprinkler", value: "Sprinkler" }, 
+  {nama: "Detektor", value: "Detektor" }, 
+  {nama: "Hidran Bangunan", value: "Hidran Bangunan" }, 
+  {nama: "Hidran Halaman", value: "Hidran Halaman" }, 
+  {nama: "Rumah Pompa Hidran", value: "Rumah Pompa Hidran" }, 
+  {nama: "Sarana Jalan Keluar", value: "Sarana Jalan Keluar" }, 
+  {nama: "Kotak P3K", value: "Kotak P3K" }, 
+  {nama: "Spill Containment Room", value: "Spill Containment Room" }, 
+  {nama: "Ruang MNS", value: "Ruang MNS" }, 
+  {nama: "Fire Ball", value: "Fire Ball" }, 
+  {nama: "CCTV", value: "CCTV" }
+]
+
 const AddNewItemPage = () => {
   const { data: session } = useSession();
   console.log("Session Data: ", session);
@@ -226,12 +242,16 @@ const AddNewItemPage = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               required
+              // size={3}
             >
               <option value="" disabled hidden>
                 Pilih jenis sarana
               </option>
-              <option value="APAP">APAP</option>
-              <option value="LAINNYA">Lainnya</option>
+              {jenisSarana.map((item, index) => (
+                  <option value={item.nama} key={index}>
+                    {item.nama}
+                  </option>
+              ))}
             </select>
           </div>
 

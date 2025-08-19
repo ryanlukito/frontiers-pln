@@ -50,6 +50,9 @@ const Navbar = () => {
           <Link href="/AccountPage" className={linkClass("/AccountPage")}>
             Account
           </Link>
+          <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
+            Admin Approval
+          </Link>
           <Link
             href="/LoginPage"
             className="ml-4 px-5 py-2 rounded-full bg-[#08333C] text-white hover:bg-[#0a4c57] shadow hover:shadow-lg transition-all duration-200"
