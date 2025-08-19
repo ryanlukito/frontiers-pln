@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { tableContent } from "../../../data/dummy";
+import React, { useEffect, useState } from "react";
+// import { tableContent } from "../../../data/dummy";
 import Pagination from "../../components/Pagination";
 import Table from "../../components/Table";
 import Navbar from "../../components/Navbar";
@@ -18,8 +18,8 @@ const ItemsPage = () => {
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<TableItem | null>(null);
-
-  const filteredData = tableContent.filter((item) =>
+  const [items, setItems] = useState<TableItem[]>([]);
+  const filteredData = items.filter((item) =>
     Object.values(item).some((val) =>
       String(val).toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -51,6 +51,40 @@ const ItemsPage = () => {
     }
     setSelectedItem(open ? item : null);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/items");
+        const data = await res.json();
+
+        if (data.success) {
+          const mapped: TableItem[] = data.items.map(
+            (item: any, index: number) => ({
+              no: String(index + 1),
+              nama_item: item.nama_item,
+              jenis_sarana: item.jenis_sarana,
+              nomor_seri: item.nomor_ser,
+              lokasi: item.nama_lokasi,
+              titik_lokasi: item.titik_lokasi,
+              spesifikasi: item.spesifikasi,
+              tanggal_pembelian: item.tanggal_pembelian,
+              pemasok: item.pemasok,
+              pic: item.PIC,
+              status: item.status_pemasangan,
+              deskripsi: item.deskripsi
+            })
+          );
+          setItems(mapped)
+          // console.log(items)
+        }
+      } catch (error) {
+        console.error("Failed to fetch items:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="w-screen min-h-screen flex flex-col bg-white text-black overflow-x-hidden">
