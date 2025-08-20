@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react"; // Optional: install lucide-react for icons
+import { Menu, X } from "lucide-react";
+import {signIn, signOut, useSession} from "next-auth/react";
 
 const Navbar = () => {
   const pathName = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const {data: session} = useSession();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -53,12 +55,21 @@ const Navbar = () => {
           <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
             Admin Approval
           </Link>
-          <Link
+
+          {session ? (
+            <button
+              onClick={() => signOut({callbackUrl: "/LoginPage"})}
+              className="ml-4 px-5 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 shadow hover:shadow-lg transition-all duration-200"
+            >
+              Logout
+            </button>
+          ) : <Link
             href="/LoginPage"
             className="ml-4 px-5 py-2 rounded-full bg-[#08333C] text-white hover:bg-[#0a4c57] shadow hover:shadow-lg transition-all duration-200"
           >
             Login
-          </Link>
+          </Link>}
+          
         </div>
 
         {/* Mobile Menu Button */}

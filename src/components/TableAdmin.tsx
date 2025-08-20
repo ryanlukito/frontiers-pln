@@ -53,11 +53,13 @@ const TableAdmin: React.FC<TableProps> = ({
               <td className="px-4 py-2">{item.status}</td>
               <td className="px-4 py-2 flex justify-center gap-2">
                 <button
+                onClick={() => console.log("Approve")}
                   className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-xs"
                 >
                   Approve
                 </button>
                 <button
+                onClick={() => console.log("Deny")}
                   className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-xs"
                 >
                   Deny
