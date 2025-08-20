@@ -1,8 +1,12 @@
-import React from "react";
+"use client"
+
+import React, {useRef} from "react";
 import { IoMdClose } from "react-icons/io";
 import Image from "next/image";
 import { TableItem } from "@/types/utils";
 import Link from "next/link";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface QRCodeModalProps {
   item: TableItem;
@@ -10,8 +14,29 @@ interface QRCodeModalProps {
 }
 
 const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleExportPDF = async() => {
+    if (!modalRef.current) return;
+
+    const canvas = await html2canvas(modalRef.current, {scale: 2});
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgWidth = 190;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let position = 10;
+    pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+
+    pdf.save(`${item?.nama_item || "QRCode"}-modal.pdf`)
+  }
+
   return (
-    <div className="bg-white w-[90%] max-w-4xl h-[70%] rounded-xl p-6 flex flex-col items-center justify-between relative shadow-xl overflow-auto">
+    <div
+      ref={modalRef} 
+      className="bg-white w-[90%] max-w-4xl h-[70%] rounded-xl p-6 flex flex-col items-center justify-between relative shadow-xl overflow-auto">
       {/* Close Button */}
       <button
         className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl"
@@ -52,6 +77,9 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
 
       {/* Action Buttons */}
       <div className="flex gap-4 mt-6">
+        <button onClick={handleExportPDF} className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
+          
+        </button>
         <button className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
           Inspection Details
         </button>
