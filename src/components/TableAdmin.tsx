@@ -13,6 +13,29 @@ const TableAdmin: React.FC<TableProps> = ({
 //   onOpenQrModal,
 //   onOpenDetailModal,
 }) => {
+  console.log(tableContent)
+
+  const handleUpdateStatus = async(id: number, newStatus: "APPROVED" | "REJECTED") => {
+    try {
+      const res = await fetch(`/api/admin-approval/${id}/status`, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({newStatus}),
+      });
+
+      const data = await res.json();
+      console.log("id item", id);
+
+      if (res.ok) {
+        console.log("Status updated:", data.item);
+      } else {
+        console.error("Failed to update:", data.error);
+      }
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
+  }
+
   return (
     <div className="overflow-x-auto w-full rounded-lg shadow-md border border-gray-200">
       <table className="min-w-full table-auto text-sm text-left text-gray-700">
@@ -53,13 +76,13 @@ const TableAdmin: React.FC<TableProps> = ({
               <td className="px-4 py-2">{item.status}</td>
               <td className="px-4 py-2 flex justify-center gap-2">
                 <button
-                onClick={() => console.log("Approve")}
+                onClick={() => handleUpdateStatus(item.id, "APPROVED")}
                   className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-xs"
                 >
                   Approve
                 </button>
                 <button
-                onClick={() => console.log("Deny")}
+                onClick={() => handleUpdateStatus(item.id, "REJECTED")}
                   className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-xs"
                 >
                   Deny

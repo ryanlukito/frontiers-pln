@@ -32,7 +32,7 @@ const ItemsPage = () => {
     goToNext,
     goToPrevious,
     setCurrentPage,
-  } = Pagination(filteredData, 5);
+  } = Pagination(filteredData, 3);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
