@@ -12,6 +12,7 @@ export interface DropdownProps {
 
 export interface TableItem {
   no: string;
+  id: number;
   nama_item: string;
   jenis_sarana: string;
   nomor_seri: string;

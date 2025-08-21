@@ -55,7 +55,7 @@ const AdminApproval = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/items");
+        const res = await fetch("/api/admin-approval");
         const data = await res.json();
         console.log("data dari be", data)
 
@@ -63,6 +63,7 @@ const AdminApproval = () => {
           const mapped: TableItem[] = data.items.map(
             (item: any, index: number) => ({
               no: String(index + 1),
+              id: item.id_item,
               nama_item: item.nama_item,
               jenis_sarana: item.jenis_sarana,
               nomor_seri: item.nomor_ser,
@@ -105,8 +106,6 @@ const AdminApproval = () => {
         {/* Data Table */}
         <TableAdmin
           tableContent={currentData}
-          // onOpenQrModal={(item) => handleModal("qr", item, true)}
-          // onOpenDetailModal={(item) => handleModal("detail", item, true)}
         />
 
         {/* Pagination */}
