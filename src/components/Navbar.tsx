@@ -52,9 +52,11 @@ const Navbar = () => {
           <Link href="/AccountPage" className={linkClass("/AccountPage")}>
             Account
           </Link>
-          <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
-            Admin Approval
-          </Link>
+          {session?.user?.role === "ADMIN" && (
+            <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
+              Admin Approval
+            </Link>
+          )}
 
           {session ? (
             <button
@@ -114,9 +116,24 @@ const Navbar = () => {
           >
             Account
           </Link>
-          <button className="mt-2 px-5 py-2 rounded-full bg-[#08333C] text-white hover:bg-[#0a4c57] shadow hover:shadow-lg transition-all duration-200">
+          {session?.user?.role === "ADMIN" && (
+            <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
+              Admin Approval
+            </Link>
+          )}
+          {session ? (
+            <button
+              onClick={() => signOut({callbackUrl: "/LoginPage"})}
+              className="ml-4 px-5 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 shadow hover:shadow-lg transition-all duration-200"
+            >
+              Logout
+            </button>
+          ) : <Link
+            href="/LoginPage"
+            className="ml-4 px-5 py-2 rounded-full bg-[#08333C] text-white hover:bg-[#0a4c57] shadow hover:shadow-lg transition-all duration-200"
+          >
             Login
-          </button>
+          </Link>}
         </div>
       )}
     </nav>
