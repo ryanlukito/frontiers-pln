@@ -26,6 +26,9 @@ const Table: React.FC<UpdatedTableProps> = ({
             <th className="px-4 py-3">Titik Lokasi</th>
             <th className="px-4 py-3">Spesifikasi</th>
             <th className="px-4 py-3">Tanggal Pembelian</th>
+            <th className="px-4 py-3">Tanggal Kedaluwarsa</th>
+            <th className="px-4 py-3">Berat</th>
+            <th className="px-4 py-3">Jenis APAP</th>
             <th className="px-4 py-3">Pemasok</th>
             <th className="px-4 py-3">PIC</th>
             <th className="px-4 py-3">Status</th>
@@ -47,10 +50,13 @@ const Table: React.FC<UpdatedTableProps> = ({
               <td className="px-4 py-2">{item.lokasi}</td>
               <td className="px-4 py-2">{item.titik_lokasi}</td>
               <td className="px-4 py-2">{item.spesifikasi}</td>
-              <td className="px-4 py-2">{item.tanggal_pembelian}</td>
+              <td className="px-4 py-2">{new Date(item.tanggal_pembelian).toLocaleDateString("id-ID")}</td>
+              <td className="px-4 py-2">{item.tanggal_kedaluwarsa ? item.tanggal_kedaluwarsa : "-"}</td>
+              <td className="px-4 py-2">{item.berat ? item.berat : "-"}</td>
+              <td className="px-4 py-2">{item.jenis_apap ? item.jenis_apap : "-"}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
-              <td className="px-4 py-2">{item.status}</td>
+              <td className="px-4 py-2">{item.status ? item.status : "-"}</td>
               <td className="px-4 py-2 flex justify-center gap-2">
                 <button
                   onClick={() => onOpenQrModal(item)}
