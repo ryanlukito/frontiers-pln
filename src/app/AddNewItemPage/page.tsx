@@ -7,19 +7,19 @@ import { Lokasi } from "@/types/utils";
 import { useSession } from "next-auth/react";
 
 const jenisSarana = [
-  {nama: "APAP", value: "APAP" }, 
-  {nama: "SCBA", value: "SCBA" }, 
-  {nama: "Sprinkler", value: "Sprinkler" }, 
-  {nama: "Detektor", value: "Detektor" }, 
-  {nama: "Hidran Bangunan", value: "Hidran Bangunan" }, 
-  {nama: "Hidran Halaman", value: "Hidran Halaman" }, 
-  {nama: "Rumah Pompa Hidran", value: "Rumah Pompa Hidran" }, 
-  {nama: "Sarana Jalan Keluar", value: "Sarana Jalan Keluar" }, 
-  {nama: "Kotak P3K", value: "Kotak P3K" }, 
-  {nama: "Spill Containment Room", value: "Spill Containment Room" }, 
-  {nama: "Ruang MNS", value: "Ruang MNS" }, 
-  {nama: "Fire Ball", value: "Fire Ball" }, 
-  {nama: "CCTV", value: "CCTV" }
+  {nama: "APAP", value: "inspeksi_APAP" }, 
+  {nama: "SCBA", value: "inspeksi_scba" }, 
+  {nama: "Sprinkler", value: "inspeksi_sprinkler" }, 
+  {nama: "Detektor", value: "inspeksi_detector" }, 
+  {nama: "Hidran Bangunan", value: "inspeksi_hidran_bangunan" }, 
+  {nama: "Hidran Halaman", value: "inspeksi_hidran_halaman" }, 
+  {nama: "Rumah Pompa Hidran", value: "inspeksi_rumah_pompa_hidran" }, 
+  {nama: "Sarana Jalan Keluar", value: "inspeksi_sarana_jalan_keluar" }, 
+  {nama: "Kotak P3K", value: "inspeksi_kotak_p3k" }, 
+  {nama: "Spill Containment Room", value: "inspeksi_spill_containment_room" }, 
+  {nama: "Ruang MNS", value: "inspeksi_ruang_mns" }, 
+  {nama: "Fire Ball", value: "inspeksi_fire_ball" }, 
+  {nama: "CCTV", value: "inspeksi_cctv" }
 ]
 
 const AddNewItemPage = () => {
@@ -102,15 +102,15 @@ const AddNewItemPage = () => {
       formDataToSend.append("tanggal_pembelian", formData.purchaseDate || "");
       formDataToSend.append(
         "tanggal_kadaluwarsa",
-        formData.jenisSarana === "APAP" ? formData.expiryDate || "" : ""
+        formData.jenisSarana === "inspeksi_APAP" ? formData.expiryDate || "" : ""
       );
       formDataToSend.append(
         "berat",
-        formData.jenisSarana === "APAP" ? formData.weight || "" : ""
+        formData.jenisSarana === "inspeksi_APAP" ? formData.weight || "" : ""
       );
       formDataToSend.append(
         "jenis_APAP",
-        formData.jenisSarana === "APAP" ? formData.apapType || "" : ""
+        formData.jenisSarana === "inspeksi_APAP" ? formData.apapType || "" : ""
       );
       formDataToSend.append("pemasok", formData.supplier);
       formDataToSend.append("PIC", formData.pic);
@@ -267,7 +267,7 @@ const AddNewItemPage = () => {
           </div>
 
           {/* Jika jenis sarana = APAP → tampilkan field tambahan */}
-          {formData.jenisSarana === "APAP" && (
+          {formData.jenisSarana === "inspeksi_APAP" && (
             <>
               <InputField
                 name="expiryDate"

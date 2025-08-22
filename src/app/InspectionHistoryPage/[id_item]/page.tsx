@@ -2,33 +2,40 @@
 
 import React, {useState, useEffect} from "react";
 import Dropdown from "../../../components/Dropdown";
-import { Item } from "@/types/utils";
+// import { Item } from "@/types/utils";
 import { useParams } from "next/navigation";
 import CameraCapture from "@/components/CameraCapture";
+import { InspectionResponse } from "@/types/utils";
 
 const InspectionHistoryPage = () => {
 
   const {id_item} = useParams();
-  const [item, setItem] = useState<Item | null>(null);
-  const [status, setStatus] = useState("");
+  const [inspectionData, setInspectionData] = useState<InspectionResponse | null>(null);
+  const [status, setStatus] = useState<Record<string, string>>({});
   const [photo, setPhoto] = useState<string | null>(null);
+
+  function formatColumnName(name: string): string {
+    const withSpaces = name.replace(/_/g, " ");
+    return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+  }
 
   useEffect(() => {
     if (!id_item) return;
 
     const fetchItem = async () => {
-      const res = await fetch(`/api/items/${id_item}`);
-      const data = await res.json();
-      setItem(data);
-    };
+    const res = await fetch(`/api/form-inspeksi/${id_item}`);
+    const data: InspectionResponse = await res.json();
+    setInspectionData(data);
+    console.log(data)
+  };
 
     fetchItem();
   }, [id_item]);
-  console.log(item)
+  // console.log(item)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("submit inspection for:", item);
+    // console.log("submit inspection for:", item);
     console.log("status:", status);
     console.log("photo (base64):", photo);
   };
@@ -58,20 +65,35 @@ const InspectionHistoryPage = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-4xl flex flex-col gap-6 items-center"
       >
-        {/* Sample Form Row */}
-        <div className="w-full flex flex-row items-center justify-between gap-4 px-4">
-          <span className="text-base font-medium">APAR - ABC</span>
-          <Dropdown
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            options={[
-              { label: "Yes", value: "Yes" },
-              { label: "No", value: "No" },
-            ]}
-          />
-        </div>
+        {inspectionData?.columns
+        ?.filter((col) => !["id_item", "id_inspeksi", "createdAt", "gambar"].includes(col.column_name))
+        .map((col, index) => (
+          <div
+            key={index}
+            className="w-full flex flex-row items-center justify-between gap-4 px-4"
+          >
+            {/* Column label */}
+            <span className="text-base font-medium">
+              {formatColumnName(col.column_name)}
+            </span>
+
+            {/* Dropdown for status */}
+            <Dropdown
+              value={status[col.column_name] || "Status Condition"}
+              onChange={(e) => setStatus((prev) => ({
+                ...prev,
+                [col.column_name]: e.target.value,
+              }))
+            }
+              options={[
+                { label: "Yes", value: "Yes" },
+                { label: "No", value: "No" },
+              ]}
+            />
+          </div>
+        ))}
         <div className="w-full h-full">
-        <CameraCapture onCapture={(img) => setPhoto(img)}/>
+          <CameraCapture onCapture={(img) => setPhoto(img)}/>
         </div>
 
         {/* Submit Button */}
