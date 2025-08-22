@@ -65,6 +65,15 @@ export interface QRCodeProps {
   id: number;
 }
 
+export type InspectionResponse = {
+  item: {
+    jenis_sarana: string;
+    nama_item: string;
+  };
+  inspeksiTable: string;
+  columns: { column_name: string; data_type: string }[];
+};
+
 export interface RadioOptionProps {
   name: keyof FormData;
   value: string;
