@@ -12,7 +12,7 @@ export interface DropdownProps {
 
 export interface TableItem {
   no: string;
-  id: number;
+  id_item: number;
   nama_item: string;
   jenis_sarana: string;
   nomor_seri: string;
@@ -49,7 +49,6 @@ export interface FormData {
   apapType?: "GAS_CAIR_NON_HALON" | "POWDER" | "CO2" | "LITHIUM";
 }
 
-
 export interface InputFieldProps {
   name: keyof FormData;
   placeholder: string;
@@ -69,6 +68,12 @@ export interface RadioOptionProps {
 
 export interface AddElementProps {
   onClick: () => void;
+}
+
+export interface Item {
+  id: string;
+  nama_item: string;
+  nomor_seri: string;
 }
 
 export type PaginationReturn = {
