@@ -45,7 +45,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ item, onClose }) => {
           </p>
           <p>
             <span className="font-medium">Tanggal Pembelian:</span>{" "}
-            {item?.tanggal_pembelian}
+            {new Date(item?.tanggal_pembelian).toLocaleDateString("id-ID")}
           </p>
           <p>
             <span className="font-medium">Pemasok:</span> {item?.pemasok}

@@ -7,6 +7,7 @@ import { TableItem } from "@/types/utils";
 import Link from "next/link";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import QRCode from "./QRCode";
 
 interface QRCodeModalProps {
   item: TableItem;
@@ -52,8 +53,9 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
 
       {/* Content */}
       <div className="flex flex-col md:flex-row items-center justify-evenly w-full gap-6">
-        <div className="w-48 h-48 flex items-center justify-center border border-gray-300 rounded-lg">
-          <span className="text-gray-500">QR Code Placeholder</span>
+        <div className="w-48 h-48 flex items-center justify-center">
+          {/* <span className="text-gray-500">QR Code Placeholder</span> */}
+          <QRCode id={item.id_item}/>
         </div>
         <div className="flex flex-col gap-2 text-sm">
           <Image
