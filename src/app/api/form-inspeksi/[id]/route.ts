@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "ID item tidak valid" }, { status: 400 });
     }
 
+    // Ambil jenis sarana
     const item = await prisma.item.findUnique({
       where: { id_item: Number(id) },
       select: { jenis_sarana: true },
@@ -86,7 +87,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Item tidak ditemukan" }, { status: 404 });
     }
 
-    const inspeksiTable = tableMap[item.jenis_sarana!.toLowerCase().replace(/\s+/g, "_")];
+    // Map jenis_sarana ke nama tabel inspeksi
+    const normalizeKey = (str: string) =>
+      str.toLowerCase().replace(/\s+/g, "_");
+    const inspeksiTable = tableMap[normalizeKey(item.jenis_sarana!)];
+
     if (!inspeksiTable) {
       return NextResponse.json(
         { error: `Tidak ada tabel inspeksi untuk jenis_sarana ${item.jenis_sarana}` },
@@ -123,27 +128,35 @@ export async function POST(req: NextRequest) {
       imageUrl = data.publicUrl;
     }
 
-    // 🔹 Convert formData → object
-    const body: Record<string, string | number | null> = {};
+    // 🔹 Convert formData (selain id & file) → object
+    const body: Record<string, string | number | boolean | null> = {};
     formData.forEach((value, key) => {
+      if (key === "id" || key === "gambar") return; // skip id & file
       if (typeof value === "string") {
-        body[key] = value;
+        // parse boolean otomatis
+        if (value === "true" || value === "false") {
+          body[key] = value === "true";
+        } else {
+          body[key] = value;
+        }
       }
     });
 
     if (imageUrl) {
-      body.gambar = imageUrl;
+      body.gambar = imageUrl; // tambahkan URL gambar
     }
 
     // 🔹 Build dynamic query
     const cols = Object.keys(body).join(", ");
     const vals = Object.values(body)
-      .map((v) => (v === null ? "NULL" : typeof v === "string" ? `'${v}'` : v))
+      .map((v) =>
+        typeof v === "string" ? `'${v}'` : v === null ? "NULL" : v
+      )
       .join(", ");
 
     const query = `
-      INSERT INTO ${inspeksiTable} (id_item, ${cols})
-      VALUES (${Number(id)}, ${vals})
+      INSERT INTO ${inspeksiTable} (id_item${cols ? `, ${cols}` : ""})
+      VALUES (${Number(id)}${vals ? `, ${vals}` : ""})
       RETURNING *;
     `;
 
@@ -155,3 +168,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
   }
 }
+
