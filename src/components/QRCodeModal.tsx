@@ -15,7 +15,7 @@ interface QRCodeModalProps {
 
 const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-
+  console.log(item);
   const handleExportPDF = async() => {
     if (!modalRef.current) return;
 
@@ -84,7 +84,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
           Inspection Details
         </button>
         <Link
-          href="/InspectionHistoryPage"
+          href={`/InspectionHistoryPage/${item?.id_item}`}
           className="px-6 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition"
         >
           Form Inspeksi

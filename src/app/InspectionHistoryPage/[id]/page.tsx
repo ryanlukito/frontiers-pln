@@ -1,12 +1,32 @@
 "use client";
 
-import React from "react";
-import Dropdown from "../../components/Dropdown";
+import React, {useState, useEffect} from "react";
+import Dropdown from "../../../components/Dropdown";
+import { Item } from "@/types/utils";
+import { useParams } from "next/navigation";
 
 const InspectionHistoryPage = () => {
+
+  const {id_item} = useParams();
+  const [item, setItem] = useState<Item | null>(null);
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    if (!id_item) return;
+
+    const fetchItem = async () => {
+      const res = await fetch(`/api/items/${id_item}`);
+      const data = await res.json();
+      setItem(data);
+    };
+
+    fetchItem();
+  }, [id_item]);
+  console.log(item)
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("data");
+    console.log("submit inspection for:", item);
   };
 
   return (
@@ -38,8 +58,8 @@ const InspectionHistoryPage = () => {
         <div className="w-full flex flex-row items-center justify-between gap-4 px-4">
           <span className="text-base font-medium">APAR - ABC</span>
           <Dropdown
-            value={"Pilih Status"}
-            onChange={(e) => console.log(e)}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
             options={[
               { label: "Yes", value: "Yes" },
               { label: "No", value: "No" },
