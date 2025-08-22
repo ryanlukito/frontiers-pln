@@ -4,12 +4,14 @@ import React, {useState, useEffect} from "react";
 import Dropdown from "../../../components/Dropdown";
 import { Item } from "@/types/utils";
 import { useParams } from "next/navigation";
+import CameraCapture from "@/components/CameraCapture";
 
 const InspectionHistoryPage = () => {
 
   const {id_item} = useParams();
   const [item, setItem] = useState<Item | null>(null);
   const [status, setStatus] = useState("");
+  const [photo, setPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id_item) return;
@@ -27,6 +29,8 @@ const InspectionHistoryPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("submit inspection for:", item);
+    console.log("status:", status);
+    console.log("photo (base64):", photo);
   };
 
   return (
@@ -65,6 +69,9 @@ const InspectionHistoryPage = () => {
               { label: "No", value: "No" },
             ]}
           />
+        </div>
+        <div className="w-full h-full">
+        <CameraCapture onCapture={(img) => setPhoto(img)}/>
         </div>
 
         {/* Submit Button */}

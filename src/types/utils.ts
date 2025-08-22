@@ -61,6 +61,10 @@ export interface InputFieldProps {
   className?: string;
 }
 
+export interface QRCodeProps {
+  id: number;
+}
+
 export interface RadioOptionProps {
   name: keyof FormData;
   value: string;
