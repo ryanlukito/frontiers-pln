@@ -73,16 +73,19 @@ const InspectionHistoryPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!id_item) return;
 
     const formDataToSend = new FormData();
     formDataToSend.append("id", id_item as string);
-    formDataToSend.append("status", JSON.stringify(status));
+
+    // send each status key/value individually
+    Object.entries(status).forEach(([key, value]) => {
+      formDataToSend.append(key, String(value)); // "true" / "false"
+    });
+
     if (photo) {
-      // photo is base64, convert to Blob
       const blob = await fetch(photo).then(res => res.blob());
-      formDataToSend.append("photo", blob, "inspection.jpg");
+      formDataToSend.append("gambar", blob, "inspection.jpg");
     }
 
     const res = await fetch(`/api/form-inspeksi/${id_item}`, {
@@ -92,7 +95,9 @@ const InspectionHistoryPage = () => {
 
     const result = await res.json();
     console.log(result);
+    alert("Berhasil dikirim ke database!")
   };
+
 
   return (
     <div className="min-h-screen w-full bg-white text-black p-6 flex flex-col items-center">
