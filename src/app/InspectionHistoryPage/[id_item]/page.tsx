@@ -33,42 +33,65 @@ const InspectionHistoryPage = () => {
   }, [id_item]);
   // console.log(item)
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+    
+  //   if (!id_item) return;
+
+  //   const formData = {
+  //     ...status,
+  //     gambar: photo,
+  //   };
+
+  //   try {
+  //     const res = await fetch(`/api/form-inspeksi/${id_item}`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         id: id_item,
+  //         formData,
+  //       }),
+  //     });
+
+  //     const result = await res.json();
+
+  //     if (!res.ok) {
+  //       console.error("Error:", result.error);
+  //       alert("Gagal menyimpan data: " + result.error);
+  //       return;
+  //     }
+
+  //     console.log("Berhasil submit:", result);
+  //     alert("Inspeksi berhasil disimpan!");
+  //   } catch (error) {
+  //     console.error("Submit error:", error);
+  //     alert("Terjadi keselahan server")
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!id_item) return;
 
-    const formData = {
-      ...status,
-      gambar: "ini url foto",
-    };
-
-    try {
-      const res = await fetch(`/api/form-inspeksi/${id_item}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: id_item,
-          formData,
-        }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        console.error("Error:", result.error);
-        alert("Gagal menyimpan data: " + result.error);
-        return;
-      }
-
-      console.log("Berhasil submit:", result);
-      alert("Inspeksi berhasil disimpan!");
-    } catch (error) {
-      console.error("Submit error:", error);
-      alert("Terjadi keselahan server")
+    const formDataToSend = new FormData();
+    formDataToSend.append("id", id_item as string);
+    formDataToSend.append("status", JSON.stringify(status));
+    if (photo) {
+      // photo is base64, convert to Blob
+      const blob = await fetch(photo).then(res => res.blob());
+      formDataToSend.append("photo", blob, "inspection.jpg");
     }
+
+    const res = await fetch(`/api/form-inspeksi/${id_item}`, {
+      method: "POST",
+      body: formDataToSend,
+    });
+
+    const result = await res.json();
+    console.log(result);
   };
 
   return (
