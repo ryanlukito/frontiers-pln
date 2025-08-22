@@ -33,11 +33,42 @@ const InspectionHistoryPage = () => {
   }, [id_item]);
   // console.log(item)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // console.log("submit inspection for:", item);
-    console.log("status:", status);
-    console.log("photo (base64):", photo);
+    
+    if (!id_item) return;
+
+    const formData = {
+      ...status,
+      gambar: "ini url foto",
+    };
+
+    try {
+      const res = await fetch(`/api/form-inspeksi/${id_item}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id_item,
+          formData,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        console.error("Error:", result.error);
+        alert("Gagal menyimpan data: " + result.error);
+        return;
+      }
+
+      console.log("Berhasil submit:", result);
+      alert("Inspeksi berhasil disimpan!");
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert("Terjadi keselahan server")
+    }
   };
 
   return (
@@ -86,8 +117,8 @@ const InspectionHistoryPage = () => {
               }))
             }
               options={[
-                { label: "Yes", value: "Yes" },
-                { label: "No", value: "No" },
+                { label: "Yes", value: true },
+                { label: "No", value: false },
               ]}
             />
           </div>
