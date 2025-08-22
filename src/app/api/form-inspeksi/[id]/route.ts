@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "ID item tidak valid" }, { status: 400 });
     }
 
-    // 1. Ambil jenis_sarana dari item
+    // Ambil jenis sarana
     const item = await prisma.item.findUnique({
       where: { id_item: Number(id) },
       select: { jenis_sarana: true },
@@ -94,7 +94,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Item tidak ditemukan" }, { status: 404 });
     }
 
-    // 2. Tentukan tabel inspeksi
     const inspeksiTable = tableMap[item.jenis_sarana as string];
     if (!inspeksiTable) {
       return NextResponse.json(
@@ -103,8 +102,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Insert data ke tabel inspeksi
-    // Gunakan query raw, karena Prisma tidak bisa dynamic model
+    // Insert formData (termasuk foto URL)
     const cols = Object.keys(formData).join(", ");
     const vals = Object.values(formData)
       .map((v) => (typeof v === "string" ? `'${v}'` : v))
@@ -121,9 +119,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, data: result }, { status: 201 });
   } catch (error) {
     console.error("Error inserting inspeksi data:", error);
-    return NextResponse.json(
-      { error: "Terjadi kesalahan server" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
   }
 }
+
