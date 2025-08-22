@@ -41,12 +41,12 @@ const InspectionHistoryPage = () => {
 
       {/* Header Divider */}
       <div className="w-full max-w-4xl flex flex-col gap-2 items-center mb-4">
-        <div className="w-full h-0.5 bg-gray-300" />
+        <div className="w-full h-0.5 bg-black" />
         <div className="w-full flex items-center justify-between px-4 text-sm font-semibold text-gray-800">
           <span>Elemen</span>
           <span>Status Inspeksi</span>
         </div>
-        <div className="w-full h-0.5 bg-gray-300" />
+        <div className="w-full h-0.5 bg-black" />
       </div>
 
       {/* Form Section */}
