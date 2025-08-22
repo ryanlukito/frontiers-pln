@@ -21,7 +21,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   if (isNaN(Number(id))) {
     return NextResponse.json({ error: "ID item tidak valid" }, { status: 400 });
@@ -42,12 +42,19 @@ export async function GET(
     }
 
     // 2. Map jenis_sarana → nama tabel inspeksi
+    // helper untuk normalisasi
+    const normalizeKey = (str: string) =>
+    str.toLowerCase().replace(/\s+/g, "_"); // lowercase & ganti spasi jadi underscore
 
-    const inspeksiTable = tableMap[item.jenis_sarana as string];
+// ...
+    const inspeksiTable = tableMap[normalizeKey(item.jenis_sarana!)];
+
+
+    // const inspeksiTable = tableMap[item.jenis_sarana as string];
 
     if (!inspeksiTable) {
       return NextResponse.json(
-        { error: `Tidak ada tabel inspeksi untuk jenis_sarana "${item.jenis_sarana}"` },
+        { error: `Tidak ada tabel inspeksi untuk jenis_sarana ${item.jenis_sarana}` },
         { status: 400 }
       );
     }
@@ -61,6 +68,8 @@ export async function GET(
         AND table_schema = 'public'
         ORDER BY ordinal_position
       `);
+
+    console.log("Columns for inspeksi table:", columns);
 
     return NextResponse.json({
       item,
