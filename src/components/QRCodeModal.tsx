@@ -25,10 +25,10 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
 
     const pdf = new jsPDF("p", "mm", "a4");
     const imgWidth = 190;
-    const pageHeight = 297;
+    // const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let position = 10;
+    const position = 10;
     pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
 
     pdf.save(`${item?.nama_item || "QRCode"}-modal.pdf`)
