@@ -10,7 +10,7 @@ import AddElement from "../../components/AddElement";
 import AddElementModal from "../../components/AddElementModal";
 import QRCodeModal from "@/components/QRCodeModal";
 import DetailModal from "@/components/DetailModal";
-import { TableItem } from "@/types/utils";
+import { TableItem, ApiItem } from "@/types/utils";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,7 +61,7 @@ const ItemsPage = () => {
 
         if (data.success) {
           const mapped: TableItem[] = data.items.map(
-            (item: any, index: number) => ({
+            (item: ApiItem, index: number) => ({
               no: String(index + 1),
               id_item: item.id_item,
               nama_item: item.nama_item,

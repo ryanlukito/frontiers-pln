@@ -1,11 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Barchart from "../../components/Barchart";
 import RadialProgressChart from "../../components/RadialProgress";
+import Dropdown from "@/components/Dropdown";
 
 const DashboardPage = () => {
+
+  const [selectedLocation, setSelectedLocation] = useState("Banjarmasin");
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedLocation(e.target.value);
+  }
+
   return (
     <div className="w-screen min-h-screen flex flex-col items-center bg-white text-black overflow-x-hidden">
       <Navbar />
@@ -64,7 +72,17 @@ const DashboardPage = () => {
           <h1 className="mb-4 text-center font-medium">
             Kesiapan Alat Jenis Sarana
           </h1>
-          <Barchart />
+          <Dropdown
+              value={selectedLocation}
+              onChange={handleLocationChange}
+              options={[
+                { label: "Banjarmasin", value: "Banjarmasin" },
+                { label: "Yogyakarta", value: "Yogyakarta" },
+                { label: "Jakarta", value: "Jakarta" },
+              ]}
+              textTemplate="Pilih Lokasi"
+            />
+          <Barchart location={selectedLocation} />
         </div>
       </div>
     </div>

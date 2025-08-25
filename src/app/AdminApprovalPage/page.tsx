@@ -10,7 +10,7 @@ import Searchbar from "../../components/Searchbar";
 // import AddElementModal from "../../components/AddElementModal";
 // import QRCodeModal from "@/components/QRCodeModal";
 // import DetailModal from "@/components/DetailModal";
-import { TableItem } from "@/types/utils";
+import { TableItem, ApiItem } from "@/types/utils";
 
 const AdminApproval = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,7 +61,7 @@ const AdminApproval = () => {
 
         if (data.success) {
           const mapped: TableItem[] = data.items.map(
-            (item: any, index: number) => ({
+            (item: ApiItem, index: number) => ({
               no: String(index + 1),
               id: item.id_item,
               nama_item: item.nama_item,

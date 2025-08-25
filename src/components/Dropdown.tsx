@@ -9,7 +9,6 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, textTempl
       className="border py-[0.5vw] px-[1vw] rounded-md flex items-center justify-center"
     >
       <option value="" disabled>
-        {/* Status Condition... */}
         {textTemplate}
       </option>
       {options.map((option) => (
