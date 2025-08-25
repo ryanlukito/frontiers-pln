@@ -9,6 +9,7 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
+import { BarchartProps } from "@/types/utils";
 
 ChartJS.register(
   CategoryScale,
@@ -19,13 +20,20 @@ ChartJS.register(
   Legend
 );
 
-const Barchart = () => {
+const Barchart: React.FC<BarchartProps> = ({location}) => {
+  
+  const locationData: Record<string, number[]> = {
+    Banjarmasin: [12, 19, 3, 5],
+    Yogyakarta: [8, 15, 10, 12],
+    Jakarta: [20, 5, 7, 14],
+  }
+
   const data = {
     labels: ["Red", "Blue", "Yellow", "Green"],
     datasets: [
       {
         label: "Votes",
-        data: [12, 19, 3, 5],
+        data: locationData[location] || [0,0,0,0],
         backgroundColor: ["#f87171", "#60a5fa", "#facc15", "#34d399"],
       },
     ],
@@ -35,7 +43,7 @@ const Barchart = () => {
     responsive: true,
     plugins: {
       legend: { position: "top" },
-      title: { display: true },
+      title: { display: true, text: `Data untuk ${location}` },
     },
   };
 

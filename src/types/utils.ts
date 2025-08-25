@@ -34,8 +34,27 @@ export interface TableProps {
   tableContent: TableItem[];
 }
 
+export interface ApiItem {
+  id_item: string;
+  nama_item: string;
+  jenis_sarana: string;
+  nomor_ser: string;
+  nama_lokasi: string;
+  titik_lokasi: string;
+  spesifikasi: string;
+  tanggal_pembelian: string;
+  pemasok: string;
+  PIC: string;
+  status_pemasangan: string;
+  deskripsi: string;
+}
+
 export interface InspeksiData {
   [key: string]: any[];
+}
+
+export interface BarchartProps {
+  location: string;
 }
 
 export interface FormData {
