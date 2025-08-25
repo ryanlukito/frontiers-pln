@@ -82,9 +82,11 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
         <button onClick={handleExportPDF} className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
           
         </button>
-        <button className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
+        <Link 
+          href={`/DetailInspeksiPage/${item?.id_item}`} 
+          className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
           Inspection Details
-        </button>
+        </Link>
         <Link
           href={`/InspectionHistoryPage/${item?.id_item}`}
           className="px-6 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition"

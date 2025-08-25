@@ -8,6 +8,7 @@ export interface DropdownProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { label: string; value: string | boolean | number }[];
+  textTemplate: string;
 }
 
 export interface TableItem {
@@ -31,6 +32,10 @@ export interface TableItem {
 
 export interface TableProps {
   tableContent: TableItem[];
+}
+
+export interface InspeksiData {
+  [key: string]: any[];
 }
 
 export interface FormData {
@@ -101,6 +106,10 @@ export type PaginationReturn = {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 };
 
+export type Params = {
+  id_item: string;
+}
+
 export interface SearchbarProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -118,3 +127,7 @@ export type Lokasi = {
   titik_lokasi: TitikLokasi[];
 };
 
+export function formatColumnName(name: string): string {
+  const withSpaces = name.replace(/_/g, " ");
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+}
