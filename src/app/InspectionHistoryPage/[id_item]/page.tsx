@@ -6,6 +6,7 @@ import Dropdown from "../../../components/Dropdown";
 import { useParams } from "next/navigation";
 import CameraCapture from "@/components/CameraCapture";
 import { InspectionResponse } from "@/types/utils";
+import { formatColumnName } from "@/types/utils";
 
 const InspectionHistoryPage = () => {
 
@@ -13,11 +14,6 @@ const InspectionHistoryPage = () => {
   const [inspectionData, setInspectionData] = useState<InspectionResponse | null>(null);
   const [status, setStatus] = useState<Record<string, string>>({});
   const [photo, setPhoto] = useState<string | null>(null);
-
-  function formatColumnName(name: string): string {
-    const withSpaces = name.replace(/_/g, " ");
-    return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
-  }
 
   useEffect(() => {
     if (!id_item) return;
@@ -148,6 +144,7 @@ const InspectionHistoryPage = () => {
                 { label: "Yes", value: true },
                 { label: "No", value: false },
               ]}
+              textTemplate="Status Condition"
             />
           </div>
         ))}

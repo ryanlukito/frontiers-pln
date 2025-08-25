@@ -1,7 +1,7 @@
 import React from "react";
 import { DropdownProps } from "../types/utils";
 
-const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
+const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, textTemplate }) => {
   return (
     <select
       value={value === "Status Condition" ? "" : value}
@@ -9,7 +9,8 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
       className="border py-[0.5vw] px-[1vw] rounded-md flex items-center justify-center"
     >
       <option value="" disabled>
-        Status Condition...
+        {/* Status Condition... */}
+        {textTemplate}
       </option>
       {options.map((option) => (
         <option key={String(option.value)} value={String(option.value)}>
