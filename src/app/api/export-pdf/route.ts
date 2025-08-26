@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 export async function GET() {
   try {
     // ==== 1. Load Logo ====
-    const logoPath = path.join(process.cwd(), "public", "logo.png");
+    const logoPath = path.join(process.cwd(), "public", "logo_laporn.jpg");
     const logoBase64 = fs.existsSync(logoPath)
       ? fs.readFileSync(logoPath).toString("base64")
       : "";
@@ -67,12 +67,37 @@ export async function GET() {
       <body>
         <!-- PAGE 1 -->
         <header>
-          <img src="data:image/png;base64,${logoBase64}" />
-          <div>
-            <h1>CHECKLIST PEMERIKSAAN APAR</h1>
-            <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
-          </div>
+          <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
+            <tr>
+              <!-- Logo -->
+              <td style="width:15%; text-align:center; border:1px solid #000; padding:10px;">
+                <img src="data:image/png;base64,${logoBase64}" style="max-width:80px; height:auto;" />
+              </td>
+
+              <!-- Title Center -->
+              <td style="width:55%; text-align:center; border:1px solid #000; padding:10px;">
+                <p style="font-weight:bold; margin:0;">
+                  PT PLN (PERSERO) UNIT INDUK DISTRIBUSI JAKARTA RAYA
+                </p>
+                <p style="font-style:italic; margin:0;">INTEGRATED MANUAL PROCEDURE</p>
+                <p style="font-weight:bold; margin:0;">FORMULIR INSPEKSI ALAT PROTEKSI KEBAKARAN</p>
+                <p style="font-weight:bold; margin:0;">PEJABAT PENGENDALI K3L</p>
+              </td>
+
+              <!-- Document Info -->
+              <td style="width:30%; border:1px solid #000; padding:10px; font-size:12px;">
+                <p style="margin:2px 0;">No. Dokumen : </p>
+                <p style="margin:2px 0;">Tanggal Terbit : ${formattedDate}</p>
+                <p style="margin:2px 0;">Halaman : </p>
+                <p style="margin:2px 0;">Status Revisi : </p>
+              </td>
+            </tr>
+          </table>
         </header>
+        <div>
+          <h1>CHECKLIST PEMERIKSAAN APAR</h1>
+          <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
+        </div>
         <table>
           <thead>
             <tr>
@@ -143,12 +168,37 @@ export async function GET() {
         <!-- PAGE 2 -->
         <div class="page-break"></div>
         <header>
-          <img src="data:image/png;base64,${logoBase64}" />
-          <div>
-            <h1>REKAPITULASI KESIAPAN SARANA</h1>
-            <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
-          </div>
+          <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
+            <tr>
+              <!-- Logo -->
+              <td style="width:15%; text-align:center; border:1px solid #000; padding:10px;">
+                <img src="data:image/png;base64,${logoBase64}" style="max-width:80px; height:auto;" />
+              </td>
+
+              <!-- Title Center -->
+              <td style="width:55%; text-align:center; border:1px solid #000; padding:10px;">
+                <p style="font-weight:bold; margin:0;">
+                  PT PLN (PERSERO) UNIT INDUK DISTRIBUSI JAKARTA RAYA
+                </p>
+                <p style="font-style:italic; margin:0;">INTEGRATED MANUAL PROCEDURE</p>
+                <p style="font-weight:bold; margin:0;">FORMULIR INSPEKSI ALAT PROTEKSI KEBAKARAN</p>
+                <p style="font-weight:bold; margin:0;">PEJABAT PENGENDALI K3L</p>
+              </td>
+
+              <!-- Document Info -->
+              <td style="width:30%; border:1px solid #000; padding:10px; font-size:12px;">
+                <p style="margin:2px 0;">No. Dokumen : </p>
+                <p style="margin:2px 0;">Tanggal Terbit : ${formattedDate}</p>
+                <p style="margin:2px 0;">Halaman : </p>
+                <p style="margin:2px 0;">Status Revisi : </p>
+              </td>
+            </tr>
+          </table>
         </header>
+        <div>
+          <h1>REKAPITULASI KESIAPAN SARANA</h1>
+          <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
+        </div>
         <table>
           <thead>
             <tr>
