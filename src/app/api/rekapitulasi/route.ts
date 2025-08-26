@@ -1,31 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-
-// ---- Types minimal yang dibutuhkan (tanpa 'any') ----
-type Inspeksi = Record<string, unknown>;
-
-type ItemForCheck = {
-  inspeksi_sprinkler: Inspeksi[];
-  inspeksi_APAP: Inspeksi[];
-  inspeksi_detector: Inspeksi[];
-  inspeksi_hidran_bangunan: Inspeksi[];
-  inspeksi_hidran_halaman: Inspeksi[];
-  inspeksi_kotak_p3k: Inspeksi[];
-  inspeksi_ruang_mns: Inspeksi[];
-  inspeksi_rumah_pompa_hidran: Inspeksi[];
-  inspeksi_sarana_jalan_keluar: Inspeksi[];
-  inspeksi_scba: Inspeksi[];
-  inspeksi_spill_containment_room: Inspeksi[];
-  inspeksi_fire_ball: Inspeksi[];
-  inspeksi_cctv: Inspeksi[];
-  jenis_sarana?: string | null;
-};
-
-type StatusKategori =
-  | "Siap 100%"
-  | "Minor Ketidaksesuaian"
-  | "Mayor Ketidaksiapan"
-  | "Belum diperiksa / Rusak / Tidak Siap";
+import {Inspeksi, ItemForCheck, StatusKategori} from "@/types/utils"
 
 // ---- Helper: tentukan status dari daftar inspeksi terakhir item ----
 // Catatan: di query kita sudah `take: 1` per relation (latest).

@@ -1,3 +1,5 @@
+"use client";
+
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,7 +11,8 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
-import { BarchartProps } from "@/types/utils";
+import { RekapJenis } from "@/types/utils";
+import { useState, useEffect } from "react";
 
 ChartJS.register(
   CategoryScale,
@@ -20,21 +23,55 @@ ChartJS.register(
   Legend
 );
 
-const Barchart: React.FC<BarchartProps> = ({location}) => {
-  
-  const locationData: Record<string, number[]> = {
-    Banjarmasin: [12, 19, 3, 5],
-    Yogyakarta: [8, 15, 10, 12],
-    Jakarta: [20, 5, 7, 14],
+interface BarchartProps {
+  jenis: string;   // <-- dipilih dari dropdown
+  bulan: number;
+  tahun: number;
+}
+
+const Barchart: React.FC<BarchartProps> = ({ jenis, bulan, tahun }) => {
+  const [jenisData, setJenisData] = useState<RekapJenis[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRekap = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/rekapitulasi?bulan=${bulan}&tahun=${tahun}`);
+        const data = await res.json();
+        setJenisData(data.per_jenis || []);
+      } catch (err) {
+        console.error("Error fetching rekap: ", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRekap();
+  }, [bulan, tahun]);
+
+  if (loading) return <p>Loading chart...</p>;
+
+  const selected = jenisData.find((j) => j.jenis_sarana === jenis);
+
+  if (!selected) {
+    return <p className="italic text-gray-500">Silakan pilih jenis sarana</p>;
   }
 
+  const labels = ["Siap", "Minor", "Mayor", "Belum"];
+  const datasetData = [
+    selected.siap,
+    selected.minor,
+    selected.mayor,
+    selected.belum,
+  ];
+
   const data = {
-    labels: ["Red", "Blue", "Yellow", "Green"],
+    labels,
     datasets: [
       {
-        label: "Votes",
-        data: locationData[location] || [0,0,0,0],
-        backgroundColor: ["#f87171", "#60a5fa", "#facc15", "#34d399"],
+        label: `Status ${jenis}`,
+        data: datasetData,
+        backgroundColor: ["#34d399", "#facc15", "#f87171", "#9ca3af"],
       },
     ],
   };
@@ -43,7 +80,7 @@ const Barchart: React.FC<BarchartProps> = ({location}) => {
     responsive: true,
     plugins: {
       legend: { position: "top" },
-      title: { display: true, text: `Data untuk ${location}` },
+      title: { display: true, text: `Kesiapan ${jenis}` },
     },
   };
 
