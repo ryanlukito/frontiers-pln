@@ -3,15 +3,8 @@
 import React from "react";
 import { TableProps } from "../types/utils";
 
-// interface UpdatedTableProps extends TableProps {
-//   onOpenQrModal: (item: TableItem) => void;
-//   onOpenDetailModal: (item: TableItem) => void;
-// }
-
 const TableAdmin: React.FC<TableProps> = ({
   tableContent,
-//   onOpenQrModal,
-//   onOpenDetailModal,
 }) => {
   console.log(tableContent)
 

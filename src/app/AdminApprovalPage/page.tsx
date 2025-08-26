@@ -1,23 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-// import { tableContent } from "../../../data/dummy";
 import Pagination from "../../components/Pagination";
 import TableAdmin from "../../components/TableAdmin";
 import Navbar from "../../components/Navbar";
 import Searchbar from "../../components/Searchbar";
-// import AddElement from "../../components/AddElement";
-// import AddElementModal from "../../components/AddElementModal";
-// import QRCodeModal from "@/components/QRCodeModal";
-// import DetailModal from "@/components/DetailModal";
 import { TableItem, ApiItem } from "@/types/utils";
 
 const AdminApproval = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  // const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-  // const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  // const [selectedItem, setSelectedItem] = useState<TableItem | null>(null);
   const [items, setItems] = useState<TableItem[]>([]);
   const filteredData = items.filter((item) =>
     Object.values(item).some((val) =>
@@ -38,19 +29,6 @@ const AdminApproval = () => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
-
-  // const handleModal = (
-  //   type: "qr" | "detail",
-  //   item: TableItem | null = null,
-  //   open: boolean = false
-  // ) => {
-  //   if (type === "qr") {
-  //     setIsQrModalOpen(open);
-  //   } else {
-  //     setIsDetailModalOpen(open);
-  //   }
-  //   setSelectedItem(open ? item : null);
-  // };
 
   useEffect(() => {
     const fetchData = async () => {
