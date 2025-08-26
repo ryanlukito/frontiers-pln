@@ -27,7 +27,8 @@ export interface TableItem {
   pemasok: string;
   pic: string;
   status: string;
-  deskripsi: string;
+  deskripsi?: string;
+  kesiapan?: string;
 }
 
 export interface TableProps {
@@ -43,6 +44,9 @@ export interface ApiItem {
   titik_lokasi: string;
   spesifikasi: string;
   tanggal_pembelian: string;
+  tanggal_kedaluwarsa?: DateTime;
+  berat?: number;
+  jenis_apap?: string;
   pemasok: string;
   PIC: string;
   status_pemasangan: string;

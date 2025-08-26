@@ -79,8 +79,8 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
 
       {/* Action Buttons */}
       <div className="flex gap-4 mt-6">
-        <button onClick={handleExportPDF} className="px-6 py-2 rounded-full bg-green-600 text-white hover:bg-green-700 transition">
-          
+        <button onClick={handleExportPDF} className="px-6 py-2 rounded-full bg-yellow-600 text-white hover:bg-green-700 transition">
+          Export to PDF
         </button>
         <Link 
           href={`/DetailInspeksiPage/${item?.id_item}`} 

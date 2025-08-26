@@ -55,30 +55,46 @@ const ItemsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/items");
-        const data = await res.json();
-        console.log("data dari be", data)
+        const [itemsRes, statusRes] = await Promise.all([
+          fetch("/api/items"),
+          fetch("/api/item-status"),
+        ]);
 
-        if (data.success) {
-          const mapped: TableItem[] = data.items.map(
-            (item: ApiItem, index: number) => ({
-              no: String(index + 1),
-              id_item: item.id_item,
-              nama_item: item.nama_item,
-              jenis_sarana: item.jenis_sarana,
-              nomor_seri: item.nomor_ser,
-              lokasi: item.nama_lokasi,
-              titik_lokasi: item.titik_lokasi,
-              spesifikasi: item.spesifikasi,
-              tanggal_pembelian: item.tanggal_pembelian,
-              pemasok: item.pemasok,
-              pic: item.PIC,
-              status: item.status_pemasangan,
-              deskripsi: item.deskripsi
-            })
+        const itemsData = await itemsRes.json();
+        const statusData = await statusRes.json();
+        const statusList = statusData.data || [];
+        console.log(statusList);
+
+        if (itemsData.success) {
+          const mapped: TableItem[] = itemsData.items.map(
+            (item: ApiItem, index: number) => {
+              const matchedStatus = statusList.find(
+                (s: any) => s.id_item === item.id_item
+              );
+
+              return {
+                no: String(index + 1),
+                id_item: item.id_item,
+                nama_item: item.nama_item,
+                jenis_sarana: item.jenis_sarana,
+                nomor_seri: item.nomor_ser,
+                lokasi: item.nama_lokasi,
+                titik_lokasi: item.titik_lokasi,
+                spesifikasi: item.spesifikasi,
+                tanggal_pembelian: item.tanggal_pembelian,
+                tanggal_kedaluwarsa: item.tanggal_kedaluwarsa,
+                berat: item.berat,
+                jenis_apap: item.jenis_apap,
+                pemasok: item.pemasok,
+                pic: item.PIC,
+                status: item.status_pemasangan,
+                deskripsi: item.deskripsi,
+                kesiapan: matchedStatus ? matchedStatus.status : "-", // 👈 merged
+              };
+            }
           );
-          setItems(mapped)
-          // console.log(items)
+          setItems(mapped);
+          console.log(items);
         }
       } catch (error) {
         console.error("Failed to fetch items:", error);
@@ -87,6 +103,7 @@ const ItemsPage = () => {
 
     fetchData();
   }, []);
+
 
   return (
     <div className="w-screen min-h-screen flex flex-col bg-white text-black overflow-x-hidden">
