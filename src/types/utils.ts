@@ -7,8 +7,8 @@ export type RadialProgressChartProps = {
 export interface DropdownProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: { label: string; value: string | boolean | number }[];
-  textTemplate: string;
+  options: { label: string; value: string}[];
+  textTemplate?: string;
 }
 
 export interface TableItem {
@@ -55,6 +55,25 @@ export interface InspeksiData {
 
 export interface BarchartProps {
   location: string;
+  bulan: number;
+  tahun: number;
+  mode?: "lokasi" | "jenis";
+}
+
+export interface RekapLocation {
+  lokasi: string;
+  siap_items: number;
+  minor_items: number;
+  mayor_items: number;
+  belum_items: number;
+}
+
+export interface RekapJenis {
+  jenis_sarana: string;
+  siap: number;
+  minor: number;
+  mayor: number;
+  belum: number;
 }
 
 export interface FormData {
@@ -145,6 +164,31 @@ export type Lokasi = {
   nama_lokasi: string;
   titik_lokasi: TitikLokasi[];
 };
+
+export type Inspeksi = Record<string, unknown>;
+
+export type ItemForCheck = {
+  inspeksi_sprinkler: Inspeksi[];
+  inspeksi_APAP: Inspeksi[];
+  inspeksi_detector: Inspeksi[];
+  inspeksi_hidran_bangunan: Inspeksi[];
+  inspeksi_hidran_halaman: Inspeksi[];
+  inspeksi_kotak_p3k: Inspeksi[];
+  inspeksi_ruang_mns: Inspeksi[];
+  inspeksi_rumah_pompa_hidran: Inspeksi[];
+  inspeksi_sarana_jalan_keluar: Inspeksi[];
+  inspeksi_scba: Inspeksi[];
+  inspeksi_spill_containment_room: Inspeksi[];
+  inspeksi_fire_ball: Inspeksi[];
+  inspeksi_cctv: Inspeksi[];
+  jenis_sarana?: string | null;
+};
+
+export type StatusKategori =
+  | "Siap 100%"
+  | "Minor Ketidaksesuaian"
+  | "Mayor Ketidaksiapan"
+  | "Belum diperiksa / Rusak / Tidak Siap";
 
 export function formatColumnName(name: string): string {
   const withSpaces = name.replace(/_/g, " ");
