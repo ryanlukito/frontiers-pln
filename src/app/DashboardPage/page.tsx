@@ -19,6 +19,30 @@ const DashboardPage = () => {
     setSelectedJenis(e.target.value);
   };
 
+  const handleExportPDF = async() => {
+    try {
+      const res = await fetch('/api/export-pdf', {
+        method: "GET",
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal generate PDF");
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "rekapitulasi.pdf";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export PDF error:", err);
+      alert("Gagal generate PDF, cek server log");
+    }
+  }
+
   const selectedLokasiData = lokasiData.find(
     (lok) => lok.lokasi === selectedLocation
   );
@@ -65,7 +89,9 @@ const DashboardPage = () => {
               >
                 Refresh
               </button>
-              <button className="text-sm px-3 py-1 border rounded-md hover:bg-gray-100">
+              <button 
+                className="text-sm px-3 py-1 border rounded-md hover:bg-gray-100"
+                onClick={handleExportPDF}>
                 Save to PDF
               </button>
             </div>
