@@ -1,4 +1,5 @@
-// import { NextRequest } from "next/server";
+// src/app/api/export-pdf/route.ts
+
 import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
@@ -13,8 +14,11 @@ export async function GET() {
       : "";
 
     // ==== 2. Ambil Data dari DB ====
-    const bulan = 8;
-    const tahun = 2025;
+    const now = new Date();
+    const bulan = now.getMonth() + 1; // 0 = Jan, jadi +1
+    const tahun = now.getFullYear();
+    const namaBulan = now.toLocaleString("id-ID", { month: "long" });
+
     const awalBulan = new Date(tahun, bulan - 1, 1);
     const akhirBulan = new Date(tahun, bulan, 0, 23, 59, 59);
 
@@ -59,7 +63,7 @@ export async function GET() {
           <img src="data:image/png;base64,${logoBase64}" />
           <div>
             <h1>CHECKLIST PEMERIKSAAN APAR</h1>
-            <p>Periode Pemeriksaan : Agustus 2025</p>
+            <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
           </div>
         </header>
         <table>
@@ -100,7 +104,7 @@ export async function GET() {
           <img src="data:image/png;base64,${logoBase64}" />
           <div>
             <h1>REKAPITULASI KESIAPAN SARANA</h1>
-            <p>Periode Pemeriksaan : Agustus 2025</p>
+            <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
           </div>
         </header>
         <table>
@@ -134,7 +138,7 @@ export async function GET() {
           <img src="data:image/png;base64,${logoBase64}" />
           <div>
             <h1>LEMBAR PENGESAHAN</h1>
-            <p>Periode Pemeriksaan : Agustus 2025</p>
+            <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
           </div>
         </header>
         <div class="signature">
@@ -145,9 +149,7 @@ export async function GET() {
           </div>
           <div class="sig-block">
             Pelaksana Inspeksi:<br><br>
-            ${pelaksana
-              .map((p, i) => `${i + 1}. ${p.name}<br>`)
-              .join("")}
+            ${pelaksana.map((p, i) => `${i + 1}. ${p.name}<br>`).join("")}
           </div>
         </div>
       </body>
