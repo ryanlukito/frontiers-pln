@@ -119,7 +119,7 @@ const Barchart: React.FC<BarchartProps> = ({ jenis, bulan, tahun }) => {
   };
 
   return (
-    <div className="w-full min-h-[600px]">
+    <div className="w-full h-[50vh]">
       <Bar data={data} options={options} />
     </div>
   );

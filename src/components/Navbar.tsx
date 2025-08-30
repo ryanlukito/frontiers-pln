@@ -46,12 +46,12 @@ const Navbar = () => {
           <Link href="/ItemsPage" className={linkClass("/ItemsPage")}>
             Items
           </Link>
-          <Link href="/SettingsPage" className={linkClass("/SettingsPage")}>
+          {/* <Link href="/SettingsPage" className={linkClass("/SettingsPage")}>
             Settings
           </Link>
           <Link href="/AccountPage" className={linkClass("/AccountPage")}>
             Account
-          </Link>
+          </Link> */}
           {session?.user?.role === "ADMIN" && (
             <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
               Admin Approval
