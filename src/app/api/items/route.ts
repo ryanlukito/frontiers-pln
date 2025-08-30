@@ -1,7 +1,5 @@
 import { NextRequest,NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth/next";
 import supabase from "@/lib/supabase";
 import { JenisAPAP, ItemStatus } from "@prisma/client"
 
@@ -103,12 +101,14 @@ export async function POST(req: NextRequest) {
     }
 
     // 🔹 Auth check
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "User is Not Logged In!" }, { status: 401 });
-    }
+    // const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    const uploadedBy = session.user.email;
+    // if (!session || !session.user?.email) {
+    //   return NextResponse.json({ error: "User is Not Logged In!" }, { status: 401 });
+    // }
+
+    // const uploadedBy = session.user.email;
+
 
     // 🔹 Upload file gambar ke Supabase Storage
     let imageUrl: string | null = null;
@@ -136,6 +136,8 @@ export async function POST(req: NextRequest) {
       imageUrl = publicUrlData.publicUrl;
     }
 
+    const uploadedBy = body.uploadedBy
+
     // 🔹 Insert item pakai Prisma
     const newItem = await prisma.item.create({
       data: {
@@ -155,7 +157,7 @@ export async function POST(req: NextRequest) {
         gambar: imageUrl,
         status: (body.status as ItemStatus) || ItemStatus.PENDING, // ✅ cast enum
         status_pemasangan: body.status_pemasangan === "Terpasang",
-        uploadedBy: uploadedBy || "Unknown User",
+        uploadedBy,
       },
     });
 
@@ -167,5 +169,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const id = parseInt(params.id);
+
+  try {
+    await prisma.item.delete({
+      where: { id_item: id },
+    });
+
+    return NextResponse.json({ message: "Item Berhasil Dihapus" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+  }
+}
+
+
 
 

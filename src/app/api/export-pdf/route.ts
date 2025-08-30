@@ -158,7 +158,7 @@ export async function GET() {
               <p>Pelaksana Inspeksi</p>
               <ol style="margin-top:10px; padding-left:20px;">
                 ${pelaksana
-                  .map((p, i) => `<li>${p.name ?? "..............."}</li>`)
+                  .map((p) => `<li>${p.name ?? "..............."}</li>`)
                   .join("")}
               </ol>
             </td>
