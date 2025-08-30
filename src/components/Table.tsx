@@ -108,6 +108,25 @@ const Table: React.FC<UpdatedTableProps> = ({
                   )}
                   {session?.user?.role === "ADMIN" && (
                   <button
+                  onClick={async() => {
+                    if(confirm(`Yakin ingin menghapus item ${item.nama_item}?`)) {
+                      try {
+                        const res = await fetch(`/api/items/${item.id_item}`, {
+                          method: "DELETE"
+                        })
+                        if (res.ok) {
+                          alert("Item berhasil dihapus");
+                          window.location.reload(); // or trigger re-fetch if you use SWR/React Query
+                        } else {
+                          const err = await res.json();
+                          alert(`Gagal menghapus item: ${err.error || "Unknown error"}`);
+                        }
+                      } catch(error) {
+                        console.error("Delete error:", error);
+                        alert("Terjadi kesalahan saat menghapus item");
+                      }
+                    }
+                  }}
                     className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-red-800 transition text-xs"
                   >
                     Delete
