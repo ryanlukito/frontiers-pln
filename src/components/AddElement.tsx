@@ -12,8 +12,8 @@ const AddElement: React.FC<AddElementProps> = ({ onClick }) => {
         <FaUpload className="text-white" />
       </button>
       <div className="flex flex-col">
-        <h1>Unggah Elemen</h1>
-        <h1>Inspeksi Baru</h1>
+        <h1>Menu</h1>
+        <h1>Inspeksi</h1>
       </div>
     </div>
   );

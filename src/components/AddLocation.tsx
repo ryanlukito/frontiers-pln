@@ -59,7 +59,7 @@ const AddLocation: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
+          className="w-full bg-[#32A38C] text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
         >
           {loading ? "Menyimpan..." : "Tambah Lokasi"}
         </button>

@@ -47,35 +47,44 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
       </button>
 
       {/* Header */}
-      <button className="mb-4 px-6 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
-        Generate QR Code
-      </button>
+      <div className="mb-4 px-6 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
+        QR Code
+      </div>
 
       {/* Content */}
-      <div className="flex flex-col md:flex-row items-center justify-evenly w-full gap-6">
-        <div className="w-48 h-48 flex items-center justify-center">
-          {/* <span className="text-gray-500">QR Code Placeholder</span> */}
-          <QRCode id={item.id_item}/>
+      <div className="flex flex-col md:flex-row items-center md:items-start justify-between w-full max-w-3xl bg-white shadow-md rounded-2xl p-6 gap-8">
+        {/* QR Code Section */}
+        <div className="flex flex-col items-center">
+          <div className="w-40 h-40 flex items-center justify-center border rounded-xl shadow-sm bg-gray-50">
+            <QRCode id={item.id_item} />
+          </div>
         </div>
-        <div className="flex flex-col gap-2 text-sm">
-          <Image
-            src="/frontiers.png"
-            alt="logo frontiers"
-            width={120}
-            height={120}
-            className="rounded-md"
-          />
-          <h1>
-            <span className="font-medium">Name:</span> {item?.nama_item}
-          </h1>
-          <h1>
-            <span className="font-medium">S/N:</span> {item?.nomor_seri}
-          </h1>
-          <h1 className="mt-2 text-gray-600">
-            Scan for inspection and more details
-          </h1>
+
+        {/* Item Details Section */}
+        <div className="flex flex-col gap-3 flex-1">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/frontiers.png"
+              alt="logo frontiers"
+              width={100}
+              height={100}
+              className="rounded-lg shadow-sm"
+            />
+            <div>
+              <h1 className="text-lg font-semibold">{item?.nama_item}</h1>
+              <h2 className="text-sm text-gray-500">S/N: {item?.nomor_seri}</h2>
+            </div>
+          </div>
+
+          <div className="mt-4 border-t pt-4 text-sm text-gray-600">
+            <p className="leading-relaxed">
+              This item is registered under <span className="font-medium">Frontiers</span>. 
+              Use the QR code for quick inspection access.
+            </p>
+          </div>
         </div>
       </div>
+
 
       {/* Action Buttons */}
       <div className="flex gap-4 mt-6">

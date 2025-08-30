@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
 
-const AddTitikLokasi: React.FC = () => {
+const DeleteLocation: React.FC = () => {
   const [lokasiList, setLokasiList] = useState<{ value: string; label: string }[]>([]);
   const [selectedLokasi, setSelectedLokasi] = useState("");
-  const [namaTitik, setNamaTitik] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Fetch lokasi for dropdown
+  // Fetch all lokasi
   useEffect(() => {
     const fetchLokasi = async () => {
       try {
@@ -19,9 +18,9 @@ const AddTitikLokasi: React.FC = () => {
 
         if (res.ok) {
           setLokasiList(
-            data.map((lokasi: any) => ({
-              value: lokasi.id || lokasi.lokasi_id, // make sure API returns "id"
-              label: lokasi.nama_lokasi,
+            data.map((lok: any) => ({
+              value: String(lok.lokasi_id),
+              label: lok.nama_lokasi,
             }))
           );
         } else {
@@ -35,8 +34,8 @@ const AddTitikLokasi: React.FC = () => {
     fetchLokasi();
   }, []);
 
-  // Handle submit titik lokasi
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle delete
+  const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedLokasi) {
@@ -44,26 +43,22 @@ const AddTitikLokasi: React.FC = () => {
       return;
     }
 
+    if (!confirm("Yakin ingin menghapus lokasi ini?")) return;
+
     setLoading(true);
     setMessage(null);
 
     try {
-      const res = await fetch("/api/titik-lokasi", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          lokasi_id: selectedLokasi,
-          nama_titik: namaTitik,
-        }),
+      const res = await fetch(`/api/lokasi?id=${selectedLokasi}`, {
+        method: "DELETE",
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menambahkan titik lokasi");
+      if (!res.ok) throw new Error(data.error || "Gagal menghapus lokasi");
 
-      setMessage("✅ Titik lokasi berhasil ditambahkan!");
-      setNamaTitik("");
+      setMessage("✅ Lokasi berhasil dihapus!");
+      // Remove deleted lokasi from dropdown
+      setLokasiList((prev) => prev.filter((l) => l.value !== selectedLokasi));
       setSelectedLokasi("");
     } catch (error: any) {
       setMessage(`❌ ${error.message}`);
@@ -75,10 +70,10 @@ const AddTitikLokasi: React.FC = () => {
   return (
     <div className="h-[80%] flex items-center justify-center bg-gray-100 p-4">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleDelete}
         className="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg space-y-5"
       >
-        <h2 className="text-xl font-bold text-gray-800">Tambah Titik Lokasi Baru</h2>
+        <h2 className="text-xl font-bold text-gray-800">Hapus Lokasi</h2>
 
         {/* Lokasi Dropdown */}
         <div>
@@ -93,29 +88,13 @@ const AddTitikLokasi: React.FC = () => {
           />
         </div>
 
-        {/* Nama Titik */}
-        <div>
-          <label htmlFor="namaTitik" className="block text-sm font-medium text-gray-700 mb-1">
-            Nama Titik Lokasi
-          </label>
-          <input
-            type="text"
-            id="namaTitik"
-            value={namaTitik}
-            onChange={(e) => setNamaTitik(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Masukkan nama titik lokasi"
-            required
-          />
-        </div>
-
-        {/* Submit Button */}
+        {/* Delete Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#32A38C] text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
+          className="w-full bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-800 transition disabled:bg-gray-400"
         >
-          {loading ? "Menyimpan..." : "Tambah Titik Lokasi"}
+          {loading ? "Menghapus..." : "Hapus Lokasi"}
         </button>
 
         {message && (
@@ -128,4 +107,4 @@ const AddTitikLokasi: React.FC = () => {
   );
 };
 
-export default AddTitikLokasi;
+export default DeleteLocation;
