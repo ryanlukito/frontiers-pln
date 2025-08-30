@@ -7,7 +7,7 @@ export type RadialProgressChartProps = {
 export interface DropdownProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: { label: string; value: string}[];
+  options: { label: string; value: string | boolean}[];
   textTemplate?: string;
 }
 
@@ -118,7 +118,7 @@ export type InspectionResponse = {
     nama_item: string;
   };
   inspeksiTable: string;
-  columns: { column_name: string; data_type: string }[];
+  columns: { column_name: string; data_type: string | boolean }[];
 };
 
 export interface RadioOptionProps {

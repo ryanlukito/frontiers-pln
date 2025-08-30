@@ -49,12 +49,12 @@ const Barchart: React.FC<BarchartProps> = ({ jenis, bulan, tahun }) => {
     fetchRekap();
   }, [bulan, tahun]);
 
-  if (loading) return <p>Loading chart...</p>;
+  if (loading) return <p className="text-white">Loading chart...</p>;
 
   const selected = jenisData.find((j) => j.jenis_sarana === jenis);
 
   if (!selected) {
-    return <p className="italic text-gray-500">Silakan pilih jenis sarana</p>;
+    return <p className="italic text-white">Silakan pilih jenis sarana</p>;
   }
 
   const labels = ["Siap", "Minor", "Mayor", "Belum"];
