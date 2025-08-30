@@ -169,21 +169,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id);
-
-  try {
-    await prisma.item.delete({
-      where: { id_item: id },
-    });
-
-    return NextResponse.json({ message: "Item Berhasil Dihapus" }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
-  }
-}
-
-
-
-
