@@ -108,7 +108,7 @@ const Table: React.FC<UpdatedTableProps> = ({
                   )}
                   {session?.user?.role === "ADMIN" && (
                   <button
-                    className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-green-700 transition text-xs"
+                    className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-red-800 transition text-xs"
                   >
                     Delete
                   </button>

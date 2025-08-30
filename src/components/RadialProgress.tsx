@@ -9,26 +9,23 @@ const RadialProgressChart = ({ percentage }: RadialProgressChartProps) => {
         value={percentage}
         text={`${percentage}%`}
         styles={{
-          root: {},
           path: {
-            stroke: `rgba(62, 152, 199, ${percentage / 100})`,
+            stroke: "#08333C", // teal (progress color)
             strokeLinecap: "butt",
             transition: "stroke-dashoffset 0.5s ease 0s",
             transform: "rotate(0.25turn)",
             transformOrigin: "center center",
           },
           trail: {
-            stroke: "#d6d6d6",
+            stroke: " #2DD4BF", // dark teal (background trail)
             strokeLinecap: "butt",
             transform: "rotate(0.25turn)",
             transformOrigin: "center center",
           },
           text: {
-            fill: "#f88",
-            fontSize: "16px",
-          },
-          background: {
-            fill: "#3e98c7",
+            fill: "#000000", // black text
+            fontSize: "20px",
+            fontWeight: "bold",
           },
         }}
       />

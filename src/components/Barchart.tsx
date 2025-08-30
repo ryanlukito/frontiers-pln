@@ -71,21 +71,55 @@ const Barchart: React.FC<BarchartProps> = ({ jenis, bulan, tahun }) => {
       {
         label: `Status ${jenis}`,
         data: datasetData,
-        backgroundColor: ["#34d399", "#facc15", "#f87171", "#9ca3af"],
+        backgroundColor: [
+          "#2DD4BF", // Siap (Teal)
+          "#A7F3D0", // Minor (Lighter Teal/Green)
+          "#F97316", // Mayor (Orange for warning)
+          "#475569", // Belum (Slate Gray)
+        ],
+        borderRadius: 4,
       },
     ],
   };
 
   const options: ChartOptions<"bar"> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: `Kesiapan ${jenis}` },
+      legend: { 
+        position: "top",
+        labels: {
+            color: 'rgba(255, 255, 255, 0.9)' // Light text for legend
+        }
+      },
+      title: { 
+        display: true, 
+        // text: `Kesiapan ${jenis}`,
+        color: 'rgba(255, 255, 255, 0.9)' // Light text for title
+      },
     },
+    scales: {
+        y: {
+            grid: {
+              color: "rgba(255, 255, 255, 0.15)", // Light grid lines
+            },
+            ticks: {
+              color: "rgba(255, 255, 255, 0.7)", // Light Y-axis labels
+            },
+        },
+        x: {
+            grid: {
+              display: false, // Hide vertical grid lines
+            },
+            ticks: {
+              color: "rgba(255, 255, 255, 0.9)", // Light X-axis labels
+            },
+        }
+    }
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-[600px]">
       <Bar data={data} options={options} />
     </div>
   );

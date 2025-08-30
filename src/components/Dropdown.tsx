@@ -1,12 +1,26 @@
 import React from "react";
 import { DropdownProps } from "../types/utils";
+import clsx from "clsx"; // optional helper for merging class names
 
-const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, textTemplate }) => {
+interface ExtendedDropdownProps extends DropdownProps {
+  className?: string; // allow custom className
+}
+
+const Dropdown: React.FC<ExtendedDropdownProps> = ({
+  value,
+  onChange,
+  options,
+  textTemplate,
+  className,
+}) => {
   return (
     <select
       value={value === "Status Condition" ? "" : value}
       onChange={onChange}
-      className="border py-[0.5vw] px-[1vw] rounded-md flex items-center justify-center"
+      className={clsx(
+        "border py-[0.5vw] px-[1vw] rounded-md flex items-center justify-center",
+        className
+      )}
     >
       <option value="" disabled>
         {textTemplate}
