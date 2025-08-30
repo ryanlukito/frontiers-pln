@@ -23,8 +23,12 @@ const DeleteTitikLokasi: React.FC = () => {
         } else {
           throw new Error(data.error || "Gagal memuat lokasi");
         }
-      } catch (err: any) {
-        setMessage(`❌ ${err.message}`);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setMessage(`❌ ${err.message}`);
+        } else {
+          setMessage("❌ An unknown error occurred");
+        }
       }
     };
 
@@ -64,8 +68,12 @@ const DeleteTitikLokasi: React.FC = () => {
 
       setMessage("✅ Titik lokasi berhasil dihapus!");
       setSelectedTitik("");
-    } catch (error: any) {
-      setMessage(`❌ ${error.message}`);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+          setMessage(`❌ ${err.message}`);
+        } else {
+          setMessage("❌ An unknown error occurred");
+        }
     } finally {
       setLoading(false);
     }

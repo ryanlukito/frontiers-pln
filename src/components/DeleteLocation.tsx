@@ -26,8 +26,12 @@ const DeleteLocation: React.FC = () => {
         } else {
           throw new Error(data.error || "Gagal memuat lokasi");
         }
-      } catch (err: any) {
-        setMessage(`❌ ${err.message}`);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setMessage(`❌ ${err.message}`);
+        } else {
+          setMessage("❌ An unknown error occurred");
+        }
       }
     };
 
@@ -60,8 +64,12 @@ const DeleteLocation: React.FC = () => {
       // Remove deleted lokasi from dropdown
       setLokasiList((prev) => prev.filter((l) => l.value !== selectedLokasi));
       setSelectedLokasi("");
-    } catch (error: any) {
-      setMessage(`❌ ${error.message}`);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+          setMessage(`❌ ${err.message}`);
+        } else {
+          setMessage("❌ An unknown error occurred");
+        }
     } finally {
       setLoading(false);
     }
