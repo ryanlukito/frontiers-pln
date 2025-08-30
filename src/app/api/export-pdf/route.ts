@@ -1,27 +1,68 @@
 // src/app/api/export-pdf/route.ts
-
 import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
+import { User } from "@prisma/client";
+
+async function getLogoBase64() {
+  const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
+  return fs.existsSync(logoPath)
+    ? fs.readFileSync(logoPath).toString("base64")
+    : "";
+}
+
+function getTanggalIndonesia(date = new Date()) {
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function generateHeader(logoBase64: string, formattedDate: string) {
+  return `
+    <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
+      <tr>
+        <!-- Logo -->
+        <td style="width:15%; text-align:center; border:1px solid #000; padding:10px;">
+          <img src="data:image/png;base64,${logoBase64}" style="max-width:80px; height:auto;" />
+        </td>
+
+        <!-- Title Center -->
+        <td style="width:55%; text-align:center; border:1px solid #000; padding:10px;">
+          <p style="font-weight:bold; margin:0;">PT PLN (PERSERO) UNIT INDUK DISTRIBUSI JAKARTA RAYA</p>
+          <p style="font-style:italic; margin:0;">INTEGRATED MANUAL PROCEDURE</p>
+          <p style="font-weight:bold; margin:0;">FORMULIR INSPEKSI ALAT PROTEKSI KEBAKARAN</p>
+          <p style="font-weight:bold; margin:0;">PEJABAT PENGENDALI K3L</p>
+        </td>
+
+        <!-- Document Info -->
+        <td style="width:30%; border:1px solid #000; padding:10px; font-size:12px;">
+          <p style="margin:2px 0;">No. Dokumen : </p>
+          <p style="margin:2px 0;">Tanggal Terbit : ${formattedDate}</p>
+          <p style="margin:2px 0;">Halaman : </p>
+          <p style="margin:2px 0;">Status Revisi : </p>
+        </td>
+      </tr>
+    </table>
+  `;
+}
 
 export async function GET() {
   try {
-    // ==== 1. Load Logo ====
-    const logoPath = path.join(process.cwd(), "public", "logo_laporn.jpg");
-    const logoBase64 = fs.existsSync(logoPath)
-      ? fs.readFileSync(logoPath).toString("base64")
-      : "";
-
-    // ==== 2. Ambil Data dari DB ====
-    const now = new Date();
-    const bulan = now.getMonth() + 1; // 0 = Jan, jadi +1
-    const tahun = now.getFullYear();
-    const namaBulan = now.toLocaleString("id-ID", { month: "long" });
+    // ==== 1. Data dasar ====
+    const logoBase64 = await getLogoBase64();
+    const today = new Date();
+    const bulan = today.getMonth() + 1;
+    const tahun = today.getFullYear();
+    const namaBulan = today.toLocaleString("id-ID", { month: "long" });
+    const formattedDate = getTanggalIndonesia(today);
 
     const awalBulan = new Date(tahun, bulan - 1, 1);
     const akhirBulan = new Date(tahun, bulan, 0, 23, 59, 59);
 
+    // ==== 2. Ambil data dari DB ====
     const items = await prisma.item.findMany({
       where: { status_pemasangan: true, status: "APPROVED" },
       include: {
@@ -33,28 +74,114 @@ export async function GET() {
       },
     });
 
-    const pelaksana = await prisma.user.findMany({
-      where: { role: "PELAKSANA" },
+    const pelaksana: User[] = await prisma.user.findMany({
       take: 3,
     });
 
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    // ==== 3. Ambil data rekapitulasi lewat API internal ====
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const rekapRes = await fetch(`${baseUrl}/api/rekapitulasi?bulan=${bulan}&tahun=${tahun}`);
+    const rekap = await rekapRes.json();
 
-    // ==== 3. Susun Template HTML ====
+    // ==== 4. Susun HTML ====
+    const page1 = `
+      <header>${generateHeader(logoBase64, formattedDate)}</header>
+      <div>
+        <h1>CHECKLIST PEMERIKSAAN APAR</h1>
+        <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>No</th><th>Nama Item</th><th>Lokasi</th><th>Jenis</th>
+            <th>Kesesuaian Lokasi</th><th>Visibilitas</th><th>Kemudahan Akses</th>
+            <th>Tekanan</th><th>Kepenuhan Isi</th><th>Segel Pengaman</th>
+            <th>Selang dan Nozzle</th><th>Abnormalitas Fisik</th>
+            <th>Karet Ban</th><th>Kadaluwarsa</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map((item, idx) => {
+            const i = item.inspeksi_APAP[0];
+            return `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${item.nama_item ?? "-"}</td>
+                <td>${item.lokasi ?? "-"}</td>
+                <td>${i?.kesesuaian_lokasi ?? "-"}</td>
+                <td>${i?.visibilitas ?? "-"}</td>
+                <td>${i?.kemudahan_akses ?? "-"}</td>
+                <td>${i?.tekanan ? "OK" : "X"}</td>
+                <td>${i?.kepenuhan_isi ? "OK" : "X"}</td>
+                <td>${i?.segel_pengaman ? "OK" : "X"}</td>
+                <td>${i?.selang_dan_nozel ? "OK" : "X"}</td>
+                <td>${i?.abnormalitas_fisik ? "Ada" : "Tidak"}</td>
+                <td>${i?.karetban_roda_dan_kereta ? "Ada" : "Tidak"}</td>
+                <td>${i?.kadaluwarsa ?? "Tidak"}</td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    `;
+
+    const page2 = `
+      <div class="page-break"></div>
+      <header>${generateHeader(logoBase64, formattedDate)}</header>
+      <div>
+        <h1>REKAPITULASI KESIAPAN SARANA</h1>
+        <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Jenis Sarana</th>
+            <th>Total Item</th>
+            <th>Siap 100%</th>
+            <th>Minor</th>
+            <th>Mayor</th>
+            <th>Belum Diperiksa</th>
+            <th>% Siap</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rekap.per_jenis.map((row) => `
+            <tr>
+              <td>${row.jenis_sarana}</td>
+              <td>${row.siap}</td>
+              <td>${row.minor}</td>
+              <td>${row.mayor}</td>
+              <td>${row.belum}</td>
+              <td>${row.total}</td>
+              <td>${row.persentase_siap}%</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+
+    const page3 = `
+      <div class="page-break"></div>
+      <header>${generateHeader(logoBase64, formattedDate)}</header>
+      <div class="signature">
+        <div class="sig-block">
+          Jakarta, ..........<br><br>
+          Mengetahui,<br><br><br><br>
+          <b>TL K3L KAM</b>
+        </div>
+        <div class="sig-block">
+          Pelaksana Inspeksi:<br><br>
+          ${pelaksana.map((p, i) => `${i + 1}. ${p.name}<br>`).join("")}
+        </div>
+      </div>
+    `;
+
     const html = `
       <!doctype html>
       <html>
       <head>
         <style>
           body { font-family: Arial, sans-serif; font-size: 11pt; }
-          header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-          header img { height:50px; }
-          header div { flex:1; text-align:center; }
           h1 { margin:0; font-size:14pt; }
           table { border-collapse: collapse; width:100%; margin-top:10px; }
           th, td { border:1px solid #333; padding:6px; font-size:10pt; }
@@ -65,193 +192,15 @@ export async function GET() {
         </style>
       </head>
       <body>
-        <!-- PAGE 1 -->
-        <header>
-          <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
-            <tr>
-              <!-- Logo -->
-              <td style="width:15%; text-align:center; border:1px solid #000; padding:10px;">
-                <img src="data:image/png;base64,${logoBase64}" style="max-width:80px; height:auto;" />
-              </td>
-
-              <!-- Title Center -->
-              <td style="width:55%; text-align:center; border:1px solid #000; padding:10px;">
-                <p style="font-weight:bold; margin:0;">
-                  PT PLN (PERSERO) UNIT INDUK DISTRIBUSI JAKARTA RAYA
-                </p>
-                <p style="font-style:italic; margin:0;">INTEGRATED MANUAL PROCEDURE</p>
-                <p style="font-weight:bold; margin:0;">FORMULIR INSPEKSI ALAT PROTEKSI KEBAKARAN</p>
-                <p style="font-weight:bold; margin:0;">PEJABAT PENGENDALI K3L</p>
-              </td>
-
-              <!-- Document Info -->
-              <td style="width:30%; border:1px solid #000; padding:10px; font-size:12px;">
-                <p style="margin:2px 0;">No. Dokumen : </p>
-                <p style="margin:2px 0;">Tanggal Terbit : ${formattedDate}</p>
-                <p style="margin:2px 0;">Halaman : </p>
-                <p style="margin:2px 0;">Status Revisi : </p>
-              </td>
-            </tr>
-          </table>
-        </header>
-        <div>
-          <h1>CHECKLIST PEMERIKSAAN APAR</h1>
-          <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Nama Item</th>
-              <th>Lokasi</th>
-              <th>Jenis</th>
-              <th>Kesesuaian Lokasi</th>
-              <th>Visibilitas</th>
-              <th>Kemudahan Akses</th>
-              <th>Tekanan</th>
-              <th>Kepenuhan Isi</th>
-              <th>Segel Pengaman</th>
-              <th>Selang dan Nozzle</th>
-              <th>Abnormalitas Fisik</th>
-              <th>Karet Ban</th>
-              <th>Kadaluwarsa</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items
-              .map((item, idx) => {
-                const inspeksi = item.inspeksi_APAP[0];
-                return `
-                  <tr>
-                    <td>${idx + 1}</td>
-                    <td>${item.nama_item ?? "-"}</td>
-                    <td>${item.lokasi ?? "-"}</td>
-                    <td>${inspeksi?.kesesuaian_lokasi ?? "-"}</td>
-                    <td>${inspeksi?.visibilitas ?? "-"}</td>
-                    <td>${inspeksi?.kemudahan_akses ?? "-"}</td>
-                    <td>${inspeksi?.tekanan ? "OK" : "X"}</td>
-                    <td>${inspeksi?.kepenuhan_isi ? "OK" : "X"}</td>
-                    <td>${inspeksi?.segel_pengaman ? "OK" : "X"}</td>
-                    <td>${inspeksi?.selang_dan_nozel ? "OK" : "X"}</td>
-                    <td>${inspeksi?.abnormalitas_fisik ? "Ada" : "Tidak"}</td>
-                    <td>${inspeksi?.karetban_roda_dan_kereta ? "Ada" : "Tidak"}</td>
-                    <td>${inspeksi?.kadaluwarsa ? inspeksi.kadaluwarsa : "Tidak"}</td>
-                  </tr>
-                `;
-              })
-              .join("")}
-          </tbody>
-        </table>
-        <p style="text-align:right; margin-bottom:20px;">
-          Jakarta, ${formattedDate}
-        </p>
-
-        <!-- Signature Table -->
-        <table style="width:100%; border-collapse:collapse;">
-          <tr>
-            <td style="border:1px solid #333; padding:10px; vertical-align:top; width:50%;">
-              <p>Mengetahui,</p>
-              <br><br><br>
-              <p><b>TL K3L KAM</b></p>
-            </td>
-            <td style="border:1px solid #333; padding:10px; vertical-align:top; width:50%;">
-              <p>Pelaksana Inspeksi</p>
-              <ol style="margin-top:10px; padding-left:20px;">
-                ${pelaksana
-                  .map((p) => `<li>${p.name ?? "..............."}</li>`)
-                  .join("")}
-              </ol>
-            </td>
-          </tr>
-        </table>
-
-        <!-- PAGE 2 -->
-        <div class="page-break"></div>
-        <header>
-          <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
-            <tr>
-              <!-- Logo -->
-              <td style="width:15%; text-align:center; border:1px solid #000; padding:10px;">
-                <img src="data:image/png;base64,${logoBase64}" style="max-width:80px; height:auto;" />
-              </td>
-
-              <!-- Title Center -->
-              <td style="width:55%; text-align:center; border:1px solid #000; padding:10px;">
-                <p style="font-weight:bold; margin:0;">
-                  PT PLN (PERSERO) UNIT INDUK DISTRIBUSI JAKARTA RAYA
-                </p>
-                <p style="font-style:italic; margin:0;">INTEGRATED MANUAL PROCEDURE</p>
-                <p style="font-weight:bold; margin:0;">FORMULIR INSPEKSI ALAT PROTEKSI KEBAKARAN</p>
-                <p style="font-weight:bold; margin:0;">PEJABAT PENGENDALI K3L</p>
-              </td>
-
-              <!-- Document Info -->
-              <td style="width:30%; border:1px solid #000; padding:10px; font-size:12px;">
-                <p style="margin:2px 0;">No. Dokumen : </p>
-                <p style="margin:2px 0;">Tanggal Terbit : ${formattedDate}</p>
-                <p style="margin:2px 0;">Halaman : </p>
-                <p style="margin:2px 0;">Status Revisi : </p>
-              </td>
-            </tr>
-          </table>
-        </header>
-        <div>
-          <h1>REKAPITULASI KESIAPAN SARANA</h1>
-          <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Jenis Sarana</th>
-              <th>Total Item</th>
-              <th>Siap 100%</th>
-              <th>Minor</th>
-              <th>Mayor</th>
-              <th>Belum Diperiksa</th>
-              <th>% Siap</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>APAR</td>
-              <td>${items.length}</td>
-              <td>10</td>
-              <td>2</td>
-              <td>1</td>
-              <td>0</td>
-              <td>76.92%</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- PAGE 3 -->
-        <div class="page-break"></div>
-        <header>
-          <img src="data:image/png;base64,${logoBase64}" />
-          <div>
-            <h1>LEMBAR PENGESAHAN</h1>
-            <p>Periode Pemeriksaan : ${namaBulan} ${tahun}</p>
-          </div>
-        </header>
-        <div class="signature">
-          <div class="sig-block">
-            Jakarta, ..........<br><br>
-            Mengetahui,<br><br><br><br>
-            <b>TL K3L KAM</b>
-          </div>
-          <div class="sig-block">
-            Pelaksana Inspeksi:<br><br>
-            ${pelaksana.map((p, i) => `${i + 1}. ${p.name}<br>`).join("")}
-          </div>
-        </div>
+        ${page1}
+        ${page2}
+        ${page3}
       </body>
       </html>
     `;
 
-    // ==== 4. Generate PDF dengan Playwright ====
-    const browser = await chromium.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    // ==== 5. Generate PDF ====
+    const browser = await chromium.launch({ args: ["--no-sandbox"] });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle" });
     const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
