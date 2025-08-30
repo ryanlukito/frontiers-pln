@@ -158,22 +158,33 @@ export async function GET() {
           `).join("")}
         </tbody>
       </table>
-    `;
-
-    const page3 = `
-      <div class="page-break"></div>
-      <header>${generateHeader(logoBase64, formattedDate)}</header>
-      <div class="signature">
-        <div class="sig-block">
-          Jakarta, ..........<br><br>
+      <div class="signature-box">
+        <div class="sig-col">
           Mengetahui,<br><br><br><br>
           <b>TL K3L KAM</b>
         </div>
-        <div class="sig-block">
-          Pelaksana Inspeksi:<br><br>
+        <div class="sig-col">
+          Pelaksana Inspeksi<br><br>
           ${pelaksana.map((p, i) => `${i + 1}. ${p.name}<br>`).join("")}
         </div>
       </div>
+
+      <style>
+      .signature-box {
+        display: flex;
+        border: 1px solid #000;
+        width: 100%;
+        margin-top: 20px;
+      }
+      .sig-col {
+        flex: 1;
+        padding: 20px;
+        border-right: 1px solid #000;
+      }
+      .sig-col:last-child {
+        border-right: none;
+      }
+      </style>
     `;
 
     const html = `
@@ -194,7 +205,6 @@ export async function GET() {
       <body>
         ${page1}
         ${page2}
-        ${page3}
       </body>
       </html>
     `;
