@@ -81,9 +81,12 @@ export async function GET(
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
+    const entries = Array.from(formData.entries());
+    console.log("FormData received:", entries);
+
 
     // --- Ambil ID item
-    const id = formData.get("id") as string | null;
+    const id = formData.get("id") as string;
     if (!id || isNaN(Number(id))) {
       return NextResponse.json({ error: "ID item tidak valid" }, { status: 400 });
     }
@@ -142,12 +145,14 @@ export async function POST(req: NextRequest) {
     const columns: { column_name: string }[] = await prisma.$queryRawUnsafe(`
       SELECT column_name
       FROM information_schema.columns
-      WHERE table_name = '${inspeksiTable.toLowerCase()}'
+      WHERE table_name = '${inspeksiTable}'
         AND table_schema = 'public'
     `);
 
     const validCols = columns.map((c) => c.column_name);
+    console.log("Valid columns:", validCols);
 
+    // --- Convert formData ke object, filter hanya kolom valid
     // --- Convert formData ke object, filter hanya kolom valid
     const body: Record<string, string | number | boolean | null> = {};
     formData.forEach((value, key) => {
@@ -157,11 +162,21 @@ export async function POST(req: NextRequest) {
       if (typeof value === "string") {
         if (value === "true" || value === "false") {
           body[key] = value === "true";
+        } else if (!isNaN(Number(value))) {
+          body[key] = Number(value);
         } else {
           body[key] = value;
         }
+      } else {
+        // jaga-jaga kalau ada boolean asli
+        if (typeof value === "boolean") {
+          body[key] = value;
+        } else {
+          body[key] = String(value);
+        }
       }
     });
+
 
     if (imageUrl && validCols.includes("gambar")) {
       body.gambar = imageUrl; // tambahkan URL gambar hanya kalau ada kolomnya
@@ -170,10 +185,14 @@ export async function POST(req: NextRequest) {
     // --- Build dynamic query
     const cols = Object.keys(body).join(", ");
     const vals = Object.values(body)
-      .map((v) =>
-        typeof v === "string" ? `'${v}'` : v === null ? "NULL" : v
-      )
+      .map((v) => {
+        if (typeof v === "string") return `'${v.replace(/'/g, "''")}'`; // escape '
+        if (typeof v === "boolean") return v ? "TRUE" : "FALSE";        // boolean ke PostgreSQL
+        if (v === null) return "NULL";
+        return v; // number
+      })
       .join(", ");
+
 
     const query = `
       INSERT INTO "${inspeksiTable}" (id_item${cols ? `, ${cols}` : ""})
