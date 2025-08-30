@@ -34,7 +34,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
   const previousYear = previousDate.getFullYear();
 
   const [previousMonthPercentage, setPreviousMonthPercentage] = useState<number>(0); // Added for the first radial chart
-  const [lokasiData, setLokasiData] = useState<any[]>([]);
+  // const [lokasiData, setLokasiData] = useState<any[]>([]);
   const [selectedJenis, setSelectedJenis] = useState("");
   const [jenisData, setJenisData] = useState<any[]>([]);
   // const [selectedLocation, setSelectedLocation] = useState("");
@@ -68,11 +68,6 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
     }
   };
 
-  // Keep the original selectedLokasiData logic if it's used elsewhere for display
-  // const selectedLokasiData = lokasiData.find(
-  //   (lok) => lok.lokasi === selectedLocation
-  // );
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -80,7 +75,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         const data = await res.json();
 
         setOverallPercentage(parseFloat(data.overall?.persentase_siap) || 0);
-        setLokasiData(data.per_lokasi || []);
+        // setLokasiData(data.per_lokasi || []);
         setJenisData(data.per_jenis || []);
 
         // fetch previous month based on selectedMonth
