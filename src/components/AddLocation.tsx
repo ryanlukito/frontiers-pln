@@ -26,8 +26,12 @@ const AddLocation: React.FC = () => {
 
       setMessage("✅ Lokasi berhasil ditambahkan!");
       setNamaLokasi("");
-    } catch (error: any) {
-      setMessage(`❌ ${error.message}`);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+          setMessage(`❌ ${err.message}`);
+        } else {
+          setMessage("❌ An unknown error occurred");
+        }
     } finally {
       setLoading(false);
     }
