@@ -17,6 +17,7 @@ const Table: React.FC<UpdatedTableProps> = ({
   onOpenEditModal,
 }) => {
   const {data: session} = useSession();
+  console.log(tableContent);
 
   return (
     <div className="overflow-x-auto w-full rounded-lg shadow-md border border-gray-200">

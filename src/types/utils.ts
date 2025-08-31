@@ -45,9 +45,9 @@ export interface ApiItem {
   titik_lokasi: string;
   spesifikasi: string;
   tanggal_pembelian: string;
-  tanggal_kedaluwarsa?: DateTime;
+  tanggal_kadaluwarsa?: DateTime;
   berat?: number;
-  jenis_apap?: string;
+  jenis_APAP?: string;
   pemasok: string;
   PIC: string;
   status_pemasangan: string;

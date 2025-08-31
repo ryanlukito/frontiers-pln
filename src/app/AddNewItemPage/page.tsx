@@ -93,7 +93,6 @@ const AddNewItemPage = () => {
 
     try {
       const formDataToSend = new FormData();
-
       formDataToSend.append("nama_item", formData.itemName);
       formDataToSend.append("nomor_ser", formData.serialNumber);
       formDataToSend.append("lokasi_id", formData.locationId);
@@ -152,6 +151,7 @@ const AddNewItemPage = () => {
           file: null,
         });
         setSelectedLokasi("");
+        console.log(data);
       }
     } catch (err) {
       console.error(err);
