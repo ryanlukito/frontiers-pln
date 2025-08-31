@@ -102,7 +102,7 @@ const Navbar = () => {
           >
             Items
           </Link>
-          <Link
+          {/* <Link
             href="/SettingsPage"
             className={linkClass("/SettingsPage")}
             onClick={toggleMenu}
@@ -115,7 +115,7 @@ const Navbar = () => {
             onClick={toggleMenu}
           >
             Account
-          </Link>
+          </Link> */}
           {session?.user?.role === "ADMIN" && (
             <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
               Admin Approval

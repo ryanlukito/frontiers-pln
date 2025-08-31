@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import supabase from "@/lib/supabase";
+import { resourceLimits } from "worker_threads";
 
 const tableMap: Record<string, string> = {
   sprinkler: "inspeksi_sprinkler",
@@ -183,7 +184,7 @@ export async function POST(req: NextRequest) {
     }
 
     // --- Build dynamic query
-    const cols = Object.keys(body).join(", ");
+    const cols = Object.keys(body).map((c) => `"${c}"`).join(", ");
     const vals = Object.values(body)
       .map((v) => {
         if (typeof v === "string") return `'${v.replace(/'/g, "''")}'`; // escape '
@@ -201,6 +202,7 @@ export async function POST(req: NextRequest) {
     `;
 
     const result = await prisma.$queryRawUnsafe(query);
+    console.log('Result : ', result)
 
     return NextResponse.json({ success: true, data: result }, { status: 201 });
   } catch (error) {

@@ -5,8 +5,7 @@ import Dropdown from "../../../components/Dropdown";
 // import { Item } from "@/types/utils";
 import { useParams } from "next/navigation";
 import CameraCapture from "@/components/CameraCapture";
-import { InspectionResponse } from "@/types/utils";
-import { formatColumnName } from "@/types/utils";
+import { InspectionResponse, formatColumnName, formatJenisSarana } from "@/types/utils";
 
 const InspectionHistoryPage = () => {
 
@@ -100,9 +99,9 @@ const InspectionHistoryPage = () => {
       {/* Title Section */}
       <div className="text-center mb-6">
         <h1 className="text-2xl font-bold text-[#08333C] mb-2 drop-shadow">
-          Inspeksi Alat Pemadam Api Portabel
+          Inspeksi {formatJenisSarana(inspectionData?.inspeksiTable)}
         </h1>
-        <p className="text-gray-600">Formulir Inspeksi Alat Pemadam Api</p>
+        <p className="text-gray-600">Formulir Inspeksi {formatJenisSarana(inspectionData?.inspeksiTable)}</p>
       </div>
 
       {/* Header Divider */}

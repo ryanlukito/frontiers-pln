@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
+// import { formatJenisSarana } from "@/types/utils";
 
 async function getLogoBase64() {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");

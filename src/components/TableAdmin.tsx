@@ -21,6 +21,7 @@ const TableAdmin: React.FC<TableProps> = ({
 
       if (res.ok) {
         console.log("Status updated:", data.item);
+        alert(`Status for item ${data.item.id_item} Updated!`)
       } else {
         console.error("Failed to update:", data.error);
       }
@@ -64,7 +65,7 @@ const TableAdmin: React.FC<TableProps> = ({
               <td className="px-4 py-2">{item.lokasi}</td>
               <td className="px-4 py-2">{item.titik_lokasi}</td>
               <td className="px-4 py-2">{item.spesifikasi}</td>
-              <td className="px-4 py-2">{item.tanggal_pembelian}</td>
+              <td className="px-4 py-2">{new Date(item.tanggal_pembelian).toLocaleString("id-ID")}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
               <td className="px-4 py-2">{item.status}</td>
