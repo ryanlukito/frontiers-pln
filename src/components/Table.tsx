@@ -4,6 +4,9 @@ import React from "react";
 import { TableItem, TableProps } from "../types/utils";
 import {useSession} from "next-auth/react";
 import Link from "next/link";
+import { IoQrCodeOutline } from "react-icons/io5";
+import { FaArrowRight, FaPencilAlt } from "react-icons/fa";
+import { RiDeleteBin5Fill } from "react-icons/ri";
 
 interface UpdatedTableProps extends TableProps {
   onOpenQrModal: (item: TableItem) => void;
@@ -91,22 +94,22 @@ const Table: React.FC<UpdatedTableProps> = ({
                 <div className="flex justify-center gap-2">
                   <button
                     onClick={() => onOpenQrModal(item)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition text-xs"
+                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-blue-700 transition text-xs"
                   >
-                    QR
+                    <IoQrCodeOutline className="text-sm"/>
                   </button>
                   <button
                     onClick={() => onOpenDetailModal(item)}
-                    className="px-3 py-1 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition text-xs"
+                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-gray-700 transition text-xs"
                   >
-                    Detail
+                    <FaArrowRight/>
                   </button>
                   {session?.user?.role === "ADMIN" && (
                   <Link
                     href={`/EditItemPage/${item?.id_item}`} 
-                    className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-xs"
+                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-green-700 transition text-xs"
                   >
-                    Edit
+                    <FaPencilAlt/>
                   </Link>
                   )}
                   {session?.user?.role === "ADMIN" && (
@@ -130,9 +133,9 @@ const Table: React.FC<UpdatedTableProps> = ({
                       }
                     }
                   }}
-                    className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-red-800 transition text-xs"
+                    className="px-3 py-2 bg-red-600 text-white rounded-sm hover:bg-red-800 transition text-xs"
                   >
-                    Delete
+                    <RiDeleteBin5Fill/>
                   </button>
                   )}
                 </div>

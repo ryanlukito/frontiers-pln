@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { RekapJenis } from "@/types/utils";
 import { useState, useEffect } from "react";
+import { formatJenisSarana, BarchartProps } from "@/types/utils";
 
 ChartJS.register(
   CategoryScale,
@@ -22,12 +23,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-interface BarchartProps {
-  jenis: string;   // <-- dipilih dari dropdown
-  bulan: number;
-  tahun: number;
-}
 
 const Barchart: React.FC<BarchartProps> = ({ jenis, bulan, tahun }) => {
   const [jenisData, setJenisData] = useState<RekapJenis[]>([]);
@@ -69,7 +64,7 @@ const Barchart: React.FC<BarchartProps> = ({ jenis, bulan, tahun }) => {
     labels,
     datasets: [
       {
-        label: `Status ${jenis}`,
+        label: `Status ${formatJenisSarana(jenis)}`,
         data: datasetData,
         backgroundColor: [
           "#2DD4BF", // Siap (Teal)

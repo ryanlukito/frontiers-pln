@@ -72,7 +72,7 @@ const AdminApproval = () => {
 
       <main className="w-full max-w-6xl mx-auto p-6 flex flex-col gap-4">
         <h1 className="text-2xl font-bold mb-2 text-center">
-          Inspection Element
+          Admin Approval
         </h1>
 
         {/* Search and Add Controls */}
