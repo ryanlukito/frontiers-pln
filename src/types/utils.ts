@@ -21,12 +21,13 @@ export interface TableItem {
   titik_lokasi: string;
   spesifikasi: string;
   tanggal_pembelian: DateTime;
-  tanggal_kedaluwarsa: DateTime;
+  tanggal_kadaluwarsa: DateTime;
   berat: number;
-  jenis_apap: string;
+  jenis_APAP: string;
   pemasok: string;
   pic: string;
   status: string;
+  uploadedBy?: string;
   deskripsi?: string;
   kesiapan?: string;
 }

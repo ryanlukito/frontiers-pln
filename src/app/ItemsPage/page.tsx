@@ -8,12 +8,15 @@ import Navbar from "../../components/Navbar";
 import Searchbar from "../../components/Searchbar";
 import AddElement from "../../components/AddElement";
 import AddElementModal from "../../components/AddElementModal";
+import EditModal from "../../components/EditModal";
 import QRCodeModal from "@/components/QRCodeModal";
 import DetailModal from "@/components/DetailModal";
 import { TableItem, ApiItem } from "@/types/utils";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [editItem, setEditItem] = useState<TableItem | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -82,9 +85,9 @@ const ItemsPage = () => {
                 titik_lokasi: item.titik_lokasi,
                 spesifikasi: item.spesifikasi,
                 tanggal_pembelian: item.tanggal_pembelian,
-                tanggal_kedaluwarsa: item.tanggal_kedaluwarsa,
+                tanggal_kadaluwarsa: item.tanggal_kedaluwarsa,
                 berat: item.berat,
-                jenis_apap: item.jenis_apap,
+                jenis_APAP: item.jenis_apap,
                 pemasok: item.pemasok,
                 pic: item.PIC,
                 status: item.status_pemasangan,
@@ -125,6 +128,7 @@ const ItemsPage = () => {
           tableContent={currentData}
           onOpenQrModal={(item) => handleModal("qr", item, true)}
           onOpenDetailModal={(item) => handleModal("detail", item, true)}
+          onOpenEditModal={(item) => {setEditItem(item); setIsEditOpen(true)}}
         />
 
         {/* Pagination */}
@@ -182,6 +186,19 @@ const ItemsPage = () => {
           />
         </div>
       )}
+
+      {isEditOpen && editItem && (
+        <EditModal
+          item={editItem}
+          onClose={() => setIsEditOpen(false)}
+          onSave={(updatedItem) => {
+            setItems((prev) =>
+              prev.map((i) => (i.id_item === updatedItem.id_item ? updatedItem : i))
+            );
+          }}
+        />
+      )}
+
     </div>
   );
 };
