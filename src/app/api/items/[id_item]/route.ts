@@ -19,11 +19,35 @@ export async function DELETE(
   }
 }
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id_item: string } }
+) {
+  const id = parseInt(params.id_item);
+
+  try {
+    const item = await prisma.item.findUnique({
+      where: { id_item: id },
+    });
+
+    if (!item) {
+      return NextResponse.json({ error: "Item tidak ditemukan" }, { status: 404 });
+    }
+
+    return NextResponse.json(item, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id_item: string } }
 ) {
-  const id = parseInt(params.id);
+  const id = parseInt(params.id_item);
 
   try {
     const body = await req.json();

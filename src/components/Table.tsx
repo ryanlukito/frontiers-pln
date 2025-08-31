@@ -3,18 +3,17 @@
 import React from "react";
 import { TableItem, TableProps } from "../types/utils";
 import {useSession} from "next-auth/react";
+import Link from "next/link";
 
 interface UpdatedTableProps extends TableProps {
   onOpenQrModal: (item: TableItem) => void;
   onOpenDetailModal: (item: TableItem) => void;
-  onOpenEditModal: (item: TableItem) => void;
 }
 
 const Table: React.FC<UpdatedTableProps> = ({
   tableContent,
   onOpenQrModal,
   onOpenDetailModal,
-  onOpenEditModal,
 }) => {
   const {data: session} = useSession();
   console.log(tableContent);
@@ -32,7 +31,7 @@ const Table: React.FC<UpdatedTableProps> = ({
             <th className="px-4 py-3">Titik Lokasi</th>
             <th className="px-4 py-3">Spesifikasi</th>
             <th className="px-4 py-3">Tanggal Pembelian</th>
-            <th className="px-4 py-3">Tanggal Kedaluwarsa</th>
+            <th className="px-4 py-3">Tanggal KAdaluwarsa</th>
             <th className="px-4 py-3">Berat</th>
             <th className="px-4 py-3">Jenis APAP</th>
             <th className="px-4 py-3">Pemasok</th>
@@ -63,7 +62,7 @@ const Table: React.FC<UpdatedTableProps> = ({
               <td className="px-4 py-2">{item.jenis_APAP ? item.jenis_APAP : "-"}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
-              <td className="px-4 py-2">{item.status ? item.status : "-"}</td>
+              <td className="px-4 py-2">{item.status === true ? "Terpasang" : "Tidak Terpasang"}</td>
               <td className="px-4 py-2">
                 <div className="flex items-center gap-2">
                   {/* Circle with group for hover */}
@@ -103,12 +102,12 @@ const Table: React.FC<UpdatedTableProps> = ({
                     Detail
                   </button>
                   {session?.user?.role === "ADMIN" && (
-                  <button
-                    onClick={() => onOpenEditModal(item)}   // open modal with item’s current data
+                  <Link
+                    href={`/EditItemPage/${item?.id_item}`} 
                     className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-xs"
                   >
                     Edit
-                  </button>
+                  </Link>
                   )}
                   {session?.user?.role === "ADMIN" && (
                   <button

@@ -5,6 +5,7 @@ import Navbar from "../../components/Navbar";
 import Barchart from "../../components/Barchart";
 import RadialProgressChart from "../../components/RadialProgress";
 import Dropdown from "@/components/Dropdown";
+import { formatJenisSarana } from "@/types/utils";
 
 const monthOptions = [
   { label: "Januari", value: 1 },
@@ -77,6 +78,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         setOverallPercentage(parseFloat(data.overall?.persentase_siap) || 0);
         // setLokasiData(data.per_lokasi || []);
         setJenisData(data.per_jenis || []);
+        console.log(data.per_jenis);
 
         // fetch previous month based on selectedMonth
         const prevDate = new Date(currentYear, selectedMonth - 2); // -2 because month index starts from 0
@@ -153,7 +155,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
             value={selectedJenis}
             onChange={handleJenisChange}
             options={jenisData.map((j) => ({
-              label: j.jenis_sarana,
+              label: formatJenisSarana(j.jenis_sarana),
               value: j.jenis_sarana,
             }))}
             textTemplate="Pilih Jenis Sarana"
