@@ -26,7 +26,7 @@ export interface TableItem {
   jenis_APAP: string;
   pemasok: string;
   pic: string;
-  status: string;
+  status: boolean;
   uploadedBy?: string;
   deskripsi?: string;
   kesiapan?: string;
@@ -111,6 +111,12 @@ export interface InputFieldProps {
 
 export interface QRCodeProps {
   id: number;
+}
+
+export interface BarchartProps {
+  jenis: string; 
+  bulan: number;
+  tahun: number;
 }
 
 export type InspectionResponse = {
