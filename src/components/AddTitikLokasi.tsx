@@ -59,7 +59,7 @@ const AddTitikLokasi: React.FC = () => {
         },
         body: JSON.stringify({
           lokasi_id: selectedLokasi,
-          nama_titik: namaTitik,
+          nama_titik_lokasi: namaTitik,
         }),
       });
 

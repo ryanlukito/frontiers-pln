@@ -37,7 +37,7 @@ export interface TableProps {
 }
 
 export interface ApiItem {
-  id_item: string;
+  id_item: number;
   nama_item: string;
   jenis_sarana: string;
   nomor_ser: string;
@@ -59,7 +59,7 @@ export interface InspeksiData {
 }
 
 export interface BarchartProps {
-  location: string;
+  location?: string;
   bulan: number;
   tahun: number;
   mode?: "lokasi" | "jenis";
@@ -206,7 +206,9 @@ export function formatColumnName(name: string): string {
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
 }
 
-export function formatJenisSarana(name: string): string {
+export function formatJenisSarana(name?: string): string {
+  if (!name) return "";
+
   // Hilangkan prefix "inspeksi_"
   const cleaned = name.replace(/^inspeksi_/, "");
 

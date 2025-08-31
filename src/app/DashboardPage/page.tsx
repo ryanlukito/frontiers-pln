@@ -35,10 +35,12 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
   const previousYear = previousDate.getFullYear();
 
   const [previousMonthPercentage, setPreviousMonthPercentage] = useState<number>(0); // Added for the first radial chart
-  // const [lokasiData, setLokasiData] = useState<any[]>([]);
+  const [lokasiData, setLokasiData] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [locationPercentage, setLocationPercentage] = useState<number>(0);
+
   const [selectedJenis, setSelectedJenis] = useState("");
   const [jenisData, setJenisData] = useState<any[]>([]);
-  // const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 
   const handleJenisChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -69,6 +71,14 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
     }
   };
 
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const loc = e.target.value;
+    setSelectedLocation(loc);
+
+    const locData = lokasiData.find((l) => l.lokasi === loc);
+    setLocationPercentage(parseFloat(locData?.persentase_siap) || 0);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,9 +86,14 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         const data = await res.json();
 
         setOverallPercentage(parseFloat(data.overall?.persentase_siap) || 0);
-        // setLokasiData(data.per_lokasi || []);
+        setLokasiData(data.per_lokasi || []);
         setJenisData(data.per_jenis || []);
-        console.log(data.per_jenis);
+        // console.log(data.per_jenis);
+
+        if (data.per_lokasi?.length > 0 && !selectedLocation) {
+          setSelectedLocation(data.per_lokasi[0].lokasi);
+          setLocationPercentage(parseFloat(data.per_lokasi[0].persentase_siap) || 0);
+        }
 
         // fetch previous month based on selectedMonth
         const prevDate = new Date(currentYear, selectedMonth - 2); // -2 because month index starts from 0
@@ -119,16 +134,34 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
           {/* Overall Percentage */}
           <div className="w-full text-center py-6">
             <h1 className="text-2xl text-gray-800 mb-8">Kesiapan Secara <span className="font-bold">Keseluruhan</span></h1>
-            <div className="w-full flex flex-col md:flex-row justify-center items-center gap-12">
-            {/* Previous Month Percentage */}
+            <div className="flex items-center justify-center">
+              <div className="w-full flex flex-col md:flex-row justify-center items-center gap-12">
+              {/* Previous Month Percentage */}
+                <div className="flex flex-col items-center gap-4">
+                  <p className="text-gray-600 text-sm">Persentase Bulan Sebelumnya</p>
+                  <RadialProgressChart percentage={previousMonthPercentage} /> {/* Uses previousMonthPercentage */}
+              </div>
+              {/* Current Month Percentage */}
               <div className="flex flex-col items-center gap-4">
-                <RadialProgressChart percentage={previousMonthPercentage} /> {/* Uses previousMonthPercentage */}
-                <p className="text-gray-600 text-sm">Persentase Bulan Sebelumnya</p>
-            </div>
-            {/* Current Month Percentage */}
-            <div className="flex flex-col items-center gap-4">
-              <RadialProgressChart percentage={overallPercentage} /> {/* Uses overallPercentage */}
-              <p className="text-gray-600 text-sm">Persentase Saat ini</p>
+                <p className="text-gray-600 text-sm">Persentase Saat ini</p>
+                <RadialProgressChart percentage={overallPercentage} /> {/* Uses overallPercentage */}
+              </div>
+
+              {/* NEW: Location Percentage */}
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-gray-600 text-sm">Persentase Berdasarkan Lokasi</p>
+                <RadialProgressChart percentage={locationPercentage} />
+                <Dropdown
+                  value={selectedLocation}
+                  onChange={handleLocationChange}
+                  options={lokasiData.map((l) => ({
+                    label: l.lokasi,
+                    value: l.lokasi,
+                  }))}
+                  textTemplate="Pilih Lokasi"
+                  className="border border-gray-300 bg-white rounded-sm"
+                />
+              </div>
             </div>
           </div>
         </div>
