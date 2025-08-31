@@ -45,6 +45,7 @@ const TableAdmin: React.FC<TableProps> = ({
             <th className="px-4 py-3">Pemasok</th>
             <th className="px-4 py-3">PIC</th>
             <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3">Uploaded By</th>
             <th className="px-4 py-3 text-center">Aksi</th>
           </tr>
         </thead>
@@ -67,6 +68,7 @@ const TableAdmin: React.FC<TableProps> = ({
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
               <td className="px-4 py-2">{item.status}</td>
+              <td className="px-4 py-2">{item.uploadedBy}</td>
               <td className="px-4 py-2 flex justify-center gap-2">
                 <button
                 onClick={() => handleUpdateStatus(item.id, "APPROVED")}

@@ -7,12 +7,14 @@ import {useSession} from "next-auth/react";
 interface UpdatedTableProps extends TableProps {
   onOpenQrModal: (item: TableItem) => void;
   onOpenDetailModal: (item: TableItem) => void;
+  onOpenEditModal: (item: TableItem) => void;
 }
 
 const Table: React.FC<UpdatedTableProps> = ({
   tableContent,
   onOpenQrModal,
   onOpenDetailModal,
+  onOpenEditModal,
 }) => {
   const {data: session} = useSession();
 
@@ -55,9 +57,9 @@ const Table: React.FC<UpdatedTableProps> = ({
               <td className="px-4 py-2">{item.titik_lokasi}</td>
               <td className="px-4 py-2">{item.spesifikasi}</td>
               <td className="px-4 py-2">{new Date(item.tanggal_pembelian).toLocaleDateString("id-ID")}</td>
-              <td className="px-4 py-2">{item.tanggal_kedaluwarsa ? item.tanggal_kedaluwarsa : "-"}</td>
+              <td className="px-4 py-2">{item.tanggal_kadaluwarsa ? new Date(item.tanggal_kadaluwarsa).toLocaleDateString("id-ID") : "-"}</td>
               <td className="px-4 py-2">{item.berat ? item.berat : "-"}</td>
-              <td className="px-4 py-2">{item.jenis_apap ? item.jenis_apap : "-"}</td>
+              <td className="px-4 py-2">{item.jenis_APAP ? item.jenis_APAP : "-"}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
               <td className="px-4 py-2">{item.status ? item.status : "-"}</td>
@@ -101,6 +103,7 @@ const Table: React.FC<UpdatedTableProps> = ({
                   </button>
                   {session?.user?.role === "ADMIN" && (
                   <button
+                    onClick={() => onOpenEditModal(item)}   // open modal with item’s current data
                     className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-xs"
                   >
                     Edit

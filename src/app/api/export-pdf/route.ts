@@ -73,6 +73,7 @@ export async function GET() {
         },
       },
     });
+    console.log(items);
 
     const pelaksana: User[] = await prisma.user.findMany({
       take: 3,
@@ -103,11 +104,13 @@ export async function GET() {
         <tbody>
           ${items.map((item, idx) => {
             const i = item.inspeksi_APAP[0];
+            console.log(i);
             return `
               <tr>
                 <td>${idx + 1}</td>
                 <td>${item.nama_item ?? "-"}</td>
                 <td>${item.lokasi ?? "-"}</td>
+                <td>${item.jenis_sarana}</td>
                 <td>${i?.kesesuaian_lokasi ?? "-"}</td>
                 <td>${i?.visibilitas ?? "-"}</td>
                 <td>${i?.kemudahan_akses ?? "-"}</td>

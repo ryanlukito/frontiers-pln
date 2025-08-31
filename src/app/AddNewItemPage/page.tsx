@@ -121,6 +121,10 @@ const AddNewItemPage = () => {
         formDataToSend.append("gambar", formData.file); // ✅ file asli, bukan cuma nama
       }
 
+      if (session?.user?.email) {
+        formDataToSend.append("uploadedBy", session.user.email);
+      }
+
       const res = await fetch("/api/items", {
         method: "POST",
         body: formDataToSend, // ✅ jangan kasih Content-Type manual
@@ -259,7 +263,7 @@ const AddNewItemPage = () => {
                 Pilih jenis sarana
               </option>
               {jenisSarana.map((item, index) => (
-                  <option value={item.nama} key={index}>
+                  <option value={item.value} key={index}>
                     {item.nama}
                   </option>
               ))}
