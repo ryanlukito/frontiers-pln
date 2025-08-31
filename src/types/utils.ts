@@ -45,12 +45,12 @@ export interface ApiItem {
   titik_lokasi: string;
   spesifikasi: string;
   tanggal_pembelian: string;
-  tanggal_kedaluwarsa?: DateTime;
+  tanggal_kadaluwarsa?: DateTime;
   berat?: number;
-  jenis_apap?: string;
+  jenis_APAP?: string;
   pemasok: string;
   PIC: string;
-  status_pemasangan: string;
+  status_pemasangan: boolean;
   deskripsi: string;
 }
 
@@ -198,4 +198,17 @@ export type StatusKategori =
 export function formatColumnName(name: string): string {
   const withSpaces = name.replace(/_/g, " ");
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+}
+
+export function formatJenisSarana(name: string): string {
+  // Hilangkan prefix "inspeksi_"
+  const cleaned = name.replace(/^inspeksi_/, "");
+
+  // Pisahkan underscore jadi kata
+  return cleaned
+    .split("_")
+    .map(
+      word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    )
+    .join(" ");
 }

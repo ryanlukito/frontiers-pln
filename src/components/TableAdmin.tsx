@@ -8,16 +8,16 @@ const TableAdmin: React.FC<TableProps> = ({
 }) => {
   console.log(tableContent)
 
-  const handleUpdateStatus = async(id: number, newStatus: "APPROVED" | "REJECTED") => {
+  const handleUpdateStatus = async(id_item: number, newStatus: "APPROVED" | "REJECTED") => {
     try {
-      const res = await fetch(`/api/admin-approval/${id}/status`, {
+      const res = await fetch(`/api/admin-approval/${id_item}/status`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({newStatus}),
       });
 
       const data = await res.json();
-      console.log("id item", id);
+      console.log("id item", id_item);
 
       if (res.ok) {
         console.log("Status updated:", data.item);
