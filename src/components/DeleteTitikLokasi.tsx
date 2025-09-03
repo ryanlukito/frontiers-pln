@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Dropdown from "./Dropdown";
+import { Lokasi, TitikLokasi } from "@/types/utils"; // ✅ import your types
 
 const DeleteTitikLokasi: React.FC = () => {
-  const [lokasiList, setLokasiList] = useState<any[]>([]);
+  const [lokasiList, setLokasiList] = useState<Lokasi[]>([]); // ✅ typed
   const [selectedLokasi, setSelectedLokasi] = useState("");
   const [selectedTitik, setSelectedTitik] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,13 +16,14 @@ const DeleteTitikLokasi: React.FC = () => {
     const fetchLokasi = async () => {
       try {
         const res = await fetch("/api/lokasi");
-        const data = await res.json();
+        const data: Lokasi[] = await res.json(); // ✅ assert type
 
         if (res.ok) {
           console.log("Lokasi API result:", data);
           setLokasiList(data);
         } else {
-          throw new Error(data.error || "Gagal memuat lokasi");
+          const errorData = data as { error?: string };
+          throw new Error(errorData.error || "Gagal memuat lokasi");
         }
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -37,9 +39,8 @@ const DeleteTitikLokasi: React.FC = () => {
 
   // Get titik_lokasi for the selected lokasi
   const titikOptions =
-    lokasiList
-      .find((lok: any) => String(lok.lokasi_id) === selectedLokasi)
-      ?.titik_lokasi.map((t: any) => ({
+    lokasiList.find((lok) => String(lok.lokasi_id) === selectedLokasi)
+      ?.titik_lokasi.map((t: TitikLokasi) => ({
         value: String(t.id_titik_lokasi),
         label: t.nama_titik_lokasi,
       })) || [];
@@ -69,11 +70,11 @@ const DeleteTitikLokasi: React.FC = () => {
       setMessage("✅ Titik lokasi berhasil dihapus!");
       setSelectedTitik("");
     } catch (err: unknown) {
-        if (err instanceof Error) {
-          setMessage(`❌ ${err.message}`);
-        } else {
-          setMessage("❌ An unknown error occurred");
-        }
+      if (err instanceof Error) {
+        setMessage(`❌ ${err.message}`);
+      } else {
+        setMessage("❌ An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,7 @@ const DeleteTitikLokasi: React.FC = () => {
               setSelectedLokasi(e.target.value);
               setSelectedTitik(""); // reset titik when lokasi changes
             }}
-            options={lokasiList.map((lok: any) => ({
+            options={lokasiList.map((lok) => ({
               value: String(lok.lokasi_id),
               label: lok.nama_lokasi,
             }))}
@@ -129,9 +130,7 @@ const DeleteTitikLokasi: React.FC = () => {
         </button>
 
         {message && (
-          <p className="text-sm text-center font-medium mt-2">
-            {message}
-          </p>
+          <p className="text-sm text-center font-medium mt-2">{message}</p>
         )}
       </form>
     </div>

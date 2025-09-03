@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
-// import { formatJenisSarana } from "@/types/utils";
+import { formatJenisSarana } from "@/types/utils";
 
 async function getLogoBase64() {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
@@ -65,7 +65,7 @@ export async function GET() {
 
     // ==== 2. Ambil data dari DB ====
     const items = await prisma.item.findMany({
-      where: { status_pemasangan: true, status: "APPROVED" },
+      where: { status_pemasangan: true, status: "APPROVED", jenis_sarana: "APAP" },
       include: {
         inspeksi_APAP: {
           where: { createdAt: { gte: awalBulan, lte: akhirBulan } },
@@ -151,7 +151,7 @@ export async function GET() {
         <tbody>
           ${rekap.per_jenis.map((row) => `
             <tr>
-              <td>${row.jenis_sarana}</td>
+              <td>${formatJenisSarana(row.jenis_sarana)}</td>
               <td>${row.siap}</td>
               <td>${row.minor}</td>
               <td>${row.mayor}</td>

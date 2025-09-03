@@ -10,7 +10,7 @@ import AddElement from "../../components/AddElement";
 import AddElementModal from "../../components/AddElementModal";
 import QRCodeModal from "@/components/QRCodeModal";
 import DetailModal from "@/components/DetailModal";
-import { TableItem, ApiItem } from "@/types/utils";
+import { TableItem, ApiItem, ItemStatus } from "@/types/utils";
 
 const ItemsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,14 +62,14 @@ const ItemsPage = () => {
 
         const itemsData = await itemsRes.json();
         const statusData = await statusRes.json();
-        const statusList = statusData.data || [];
+        const statusList: ItemStatus[] = statusData.data || [];
         console.log(statusList);
 
         if (itemsData.success) {
           const mapped: TableItem[] = itemsData.items.map(
             (item: ApiItem, index: number) => {
               const matchedStatus = statusList.find(
-                (s: any) => s.id_item === item.id_item
+                (s) => s.id_item === item.id_item
               );
 
               return {
@@ -94,7 +94,7 @@ const ItemsPage = () => {
             }
           );
           setItems(mapped);
-          console.log(items);
+          // console.log(items);
         }
       } catch (error) {
         console.error("Failed to fetch items:", error);

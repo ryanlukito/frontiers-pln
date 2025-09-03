@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
 import React, { useEffect, useState, use } from "react";
 import Navbar from "@/components/Navbar";
-import { InspeksiData, Params, formatColumnName } from "@/types/utils";
+import { InspeksiData, InspeksiRecord, Params, formatColumnName } from "@/types/utils";
 
 const DetailInspeksiPage = ({ params }: { params: Promise<Params> }) => {
   const { id_item } = use(params) as Params;
@@ -18,7 +18,7 @@ const DetailInspeksiPage = ({ params }: { params: Promise<Params> }) => {
           const errData = await res.json();
           throw new Error(errData.error || errData.message || "Gagal fetch data");
         }
-        const jsonData = await res.json();
+        const jsonData: InspeksiData = await res.json(); // ✅ strongly typed
         setData(jsonData);
       } catch (error) {
         if (error instanceof Error) {
@@ -76,7 +76,7 @@ const DetailInspeksiPage = ({ params }: { params: Promise<Params> }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {records.map((record, idx) => (
+                  {records.map((record: InspeksiRecord, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
                       {columns.map((col) => (
                         <td
