@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import supabase from "@/lib/supabase";
-import { resourceLimits } from "worker_threads";
+// import { resourceLimits } from "worker_threads";
 
 const tableMap: Record<string, string> = {
   sprinkler: "inspeksi_sprinkler",

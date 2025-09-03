@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
+import { LokasiAPI } from "@/types/utils";
 
 const DeleteLocation: React.FC = () => {
   const [lokasiList, setLokasiList] = useState<{ value: string; label: string }[]>([]);
@@ -18,14 +19,16 @@ const DeleteLocation: React.FC = () => {
 
         if (res.ok) {
           setLokasiList(
-            data.map((lok: any) => ({
+            (data as LokasiAPI[]).map((lok) => ({
               value: String(lok.lokasi_id),
               label: lok.nama_lokasi,
             }))
           );
         } else {
-          throw new Error(data.error || "Gagal memuat lokasi");
+          const errorData = data as { error?: string };
+          throw new Error(errorData.error || "Gagal memuat lokasi");
         }
+
       } catch (err: unknown) {
         if (err instanceof Error) {
           setMessage(`❌ ${err.message}`);

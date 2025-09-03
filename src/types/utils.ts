@@ -54,9 +54,13 @@ export interface ApiItem {
   deskripsi: string;
 }
 
-export interface InspeksiData {
-  [key: string]: any[];
-}
+export type InspeksiRecord = {
+  [key: string]: string | number | boolean | null;
+};
+
+export type InspeksiData = {
+  [tableName: string]: InspeksiRecord[];
+};
 
 export interface BarchartProps {
   location?: string;
@@ -200,6 +204,41 @@ export type StatusKategori =
   | "Minor Ketidaksesuaian"
   | "Mayor Ketidaksiapan"
   | "Belum diperiksa / Rusak / Tidak Siap";
+  
+export type RekapitulasiResponse = {
+  overall?: {
+    persentase_siap?: string | number;
+  };
+  per_lokasi?: LokasiData[];
+  per_jenis?: JenisData[];
+};
+
+export type LokasiData = {
+  lokasi: string;
+  persentase_siap?: string | number;
+};
+
+export type JenisData = {
+  jenis_sarana: string;
+  persentase_siap?: string | number;
+};
+
+export type ItemStatus = {
+  id_item: number;
+  status: string;
+};
+
+export type MainLokasi = {
+  id?: string;
+  lokasi_id?: string;
+  nama_lokasi: string;
+  titik_lokasi?: TitikLokasi[]
+};
+
+export type LokasiAPI = {
+  lokasi_id: string | number;
+  nama_lokasi: string;
+};
 
 export function formatColumnName(name: string): string {
   const withSpaces = name.replace(/_/g, " ");

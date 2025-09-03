@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Dropdown from "./Dropdown";
+import { MainLokasi } from "@/types/utils";
 
 const AddTitikLokasi: React.FC = () => {
   const [lokasiList, setLokasiList] = useState<{ value: string; label: string }[]>([]);
@@ -15,17 +16,17 @@ const AddTitikLokasi: React.FC = () => {
     const fetchLokasi = async () => {
       try {
         const res = await fetch("/api/lokasi");
-        const data = await res.json();
+        const data: MainLokasi[] = await res.json();
 
         if (res.ok) {
           setLokasiList(
-            data.map((lokasi: any) => ({
-              value: lokasi.id || lokasi.lokasi_id, // make sure API returns "id"
+            data.map((lokasi) => ({
+              value: lokasi.id ?? lokasi.lokasi_id ?? "", // make sure API returns "id"
               label: lokasi.nama_lokasi,
             }))
           );
         } else {
-          throw new Error(data.error || "Gagal memuat lokasi");
+          throw new Error("Gagal memuat lokasi");
         }
       } catch (err: unknown) {
         if (err instanceof Error) {

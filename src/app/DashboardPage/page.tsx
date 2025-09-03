@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import Barchart from "../../components/Barchart";
 import RadialProgressChart from "../../components/RadialProgress";
 import Dropdown from "@/components/Dropdown";
-import { formatJenisSarana } from "@/types/utils";
+import { formatJenisSarana, LokasiData, JenisData } from "@/types/utils";
 
 const monthOptions = [
   { label: "Januari", value: 1 },
@@ -31,16 +31,16 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
   
   const previousDate = new Date();
   previousDate.setMonth(currentDate.getMonth() - 1);
-  const previousMonth = previousDate.getMonth() + 1;
-  const previousYear = previousDate.getFullYear();
+  // const previousMonth = previousDate.getMonth() + 1;
+  // const previousYear = previousDate.getFullYear();
 
   const [previousMonthPercentage, setPreviousMonthPercentage] = useState<number>(0); // Added for the first radial chart
-  const [lokasiData, setLokasiData] = useState<any[]>([]);
+  const [lokasiData, setLokasiData] = useState<LokasiData[]>([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [locationPercentage, setLocationPercentage] = useState<number>(0);
 
   const [selectedJenis, setSelectedJenis] = useState("");
-  const [jenisData, setJenisData] = useState<any[]>([]);
+  const [jenisData, setJenisData] = useState<JenisData[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 
   const handleJenisChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,7 +76,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
     setSelectedLocation(loc);
 
     const locData = lokasiData.find((l) => l.lokasi === loc);
-    setLocationPercentage(parseFloat(locData?.persentase_siap) || 0);
+    setLocationPercentage(parseFloat(String(locData?.persentase_siap)) || 0);
   }
 
   useEffect(() => {
@@ -109,7 +109,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
     };
 
     fetchData();
-  }, [selectedMonth, currentYear]);
+  }, [selectedMonth, currentYear, selectedLocation]);
 
   return (
     <div className="w-screen min-h-screen flex flex-col items-center bg-white text-black overflow-x-hidden">
