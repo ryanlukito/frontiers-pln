@@ -63,7 +63,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ item, onClose }) => {
 };
 
 // Small reusable row component for cleaner code
-const DetailRow = ({ label, value }: { label: string; value?: string }) => (
+const DetailRow = ({ label, value }: { label: string; value?: string | number | boolean }) => (
   <p>
     <span className="font-medium text-gray-700">{label}:</span>{" "}
     <span className="text-gray-800">{value || "-"}</span>
