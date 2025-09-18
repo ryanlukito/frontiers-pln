@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = (await params);
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id_item: string }> }) {
+  const { id_item } = (await params);
   const { newStatus } = await req.json();
 
   if (!["APPROVED", "REJECTED"].includes(newStatus)) {
@@ -11,7 +11,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   try {
     const updatedItem = await prisma.item.update({
-      where: { id_item: parseInt(id) },
+      where: { id_item: parseInt(id_item) },
       data: { status: newStatus },
     });
 

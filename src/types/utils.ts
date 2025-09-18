@@ -26,7 +26,7 @@ export interface TableItem {
   jenis_APAP: string;
   pemasok: string;
   pic: string;
-  status: boolean;
+  status: boolean | string;
   uploadedBy?: string;
   deskripsi?: string;
   kesiapan?: string;

@@ -18,6 +18,7 @@ const TableAdmin: React.FC<TableProps> = ({
 
       const data = await res.json();
       console.log("id item", id_item);
+      console.log(data);
 
       if (res.ok) {
         console.log("Status updated:", data.item);
@@ -72,13 +73,13 @@ const TableAdmin: React.FC<TableProps> = ({
               <td className="px-4 py-2">{item.uploadedBy}</td>
               <td className="px-4 py-2 flex justify-center gap-2">
                 <button
-                onClick={() => handleUpdateStatus(item.id, "APPROVED")}
+                onClick={() => handleUpdateStatus(item.id_item, "APPROVED")}
                   className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-xs"
                 >
                   Approve
                 </button>
                 <button
-                onClick={() => handleUpdateStatus(item.id, "REJECTED")}
+                onClick={() => handleUpdateStatus(item.id_item, "REJECTED")}
                   className="px-3 py-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-xs"
                 >
                   Deny
