@@ -3,10 +3,10 @@ import { prisma } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id_item: string } }
+  { params }: { params: Promise<{ id_item: string }> }
 ) {
   try {
-    const id = parseInt(params.id_item);
+    const id = parseInt((await params).id_item);
 
     await prisma.item.delete({
       where: { id_item: id }, // or { id: id } if your PK is "id"
@@ -21,9 +21,9 @@ export async function DELETE(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id_item: string } }
+  { params }: { params: Promise<{ id_item: string }> }
 ) {
-  const id = parseInt(params.id_item);
+  const id = parseInt((await params).id_item);
 
   try {
     const item = await prisma.item.findUnique({
@@ -45,9 +45,9 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id_item: string } }
+  { params }: { params: Promise<{ id_item: string }> }
 ) {
-  const id = parseInt(params.id_item);
+  const id = parseInt((await params).id_item);
 
   try {
     const body = await req.json();

@@ -3,10 +3,10 @@ import { prisma } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id_item: string } }
+  { params }: { params: Promise<{ id_item: string }> }
 ) {
   try {
-    const id = parseInt(params.id_item);
+    const id = parseInt((await params).id_item);
 
     await prisma.titik_lokasi.delete({
       where: { id_titik_lokasi: id },

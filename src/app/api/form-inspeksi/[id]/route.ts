@@ -23,9 +23,9 @@ const tableMap: Record<string, string> = {
 // ====================== GET ======================
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const id  = (await params).id;
 
   if (isNaN(Number(id))) {
     return NextResponse.json({ error: "ID item tidak valid" }, { status: 400 });
