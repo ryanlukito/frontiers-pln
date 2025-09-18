@@ -46,8 +46,8 @@ export async function GET() {
     );
   }
 }
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-  const id = Number(params.id);
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const id = Number((await params).id);
 
   if (isNaN(id)) {
     return NextResponse.json({ error: "ID tidak valid" }, { status: 400 });
