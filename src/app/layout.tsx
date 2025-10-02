@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Frontiers PLN",
   description: "Website Inventarisasi Aset PLN",
+  icons:{
+    icon: "/Logo_PLN.png",
+  }
 };
 
 export default function RootLayout({

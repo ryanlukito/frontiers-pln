@@ -26,7 +26,7 @@ export interface TableItem {
   jenis_APAP: string;
   pemasok: string;
   pic: string;
-  status: boolean;
+  status: boolean | string;
   uploadedBy?: string;
   deskripsi?: string;
   kesiapan?: string;
@@ -138,6 +138,48 @@ export interface RadioOptionProps {
   checked: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   label: string;
+}
+
+export interface TelegramResponse {
+  success?: boolean;
+  message?: string;
+  error?: string;
+}
+
+export interface TelegramUser {
+  id: number;
+  is_bot: boolean;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code?: string;
+}
+
+export interface TelegramChat {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  type: string;
+}
+
+export interface TelegramMessage {
+  message_id: number;
+  from: TelegramUser;
+  chat: TelegramChat;
+  date: number;
+  text?: string;
+}
+
+export interface TelegramUpdate {
+  update_id: number;
+  message?: TelegramMessage;
+}
+
+export interface TelegramGetUpdatesResponse {
+  ok: boolean;
+  result: TelegramUpdate[];
+  description?: string;
 }
 
 export interface AddElementProps {

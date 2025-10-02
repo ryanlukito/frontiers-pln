@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import Barchart from "../../components/Barchart";
 import RadialProgressChart from "../../components/RadialProgress";
 import Dropdown from "@/components/Dropdown";
-import { formatJenisSarana, LokasiData, JenisData } from "@/types/utils";
+import { formatJenisSarana, LokasiData, JenisData, TelegramResponse } from "@/types/utils";
 
 const monthOptions = [
   { label: "Januari", value: 1 },
@@ -79,6 +79,77 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
     setLocationPercentage(parseFloat(String(locData?.persentase_siap)) || 0);
   }
 
+  const handleSendTelegram = async () => {
+    try {
+      const bulanLabel =
+        monthOptions.find((m) => m.value === selectedMonth)?.label || "";
+      // const jenisLabel = selectedJenis
+      //   ? formatJenisSarana(selectedJenis)
+      //   : "Semua Jenis";
+
+      // === build message for all lokasi ===
+      const lokasiLines =
+        lokasiData.length > 0
+          ? lokasiData
+              .map(
+                (loc) =>
+                  `• ${loc.lokasi}: ${parseFloat(
+                    String(loc.persentase_siap)
+                  ).toFixed(2)}%`
+              )
+              .join("\n")
+          : "- Tidak ada data lokasi -";
+
+      // === build message for all jenis sarana ===
+      const jenisLines =
+        jenisData.length > 0
+          ? jenisData
+              .map(
+                (j) =>
+                  `• ${formatJenisSarana(j.jenis_sarana)}: ${parseFloat(
+                    String(j.persentase_siap)
+                  ).toFixed(2)}%`
+              )
+              .join("\n")
+          : "- Tidak ada data jenis sarana -";
+
+      // === Final message ===
+      const message = `📊 Rekapitulasi Kesiapan
+        Bulan: ${bulanLabel} ${currentYear}
+
+        🔹 Persentase Keseluruhan: ${overallPercentage}%
+
+        🏢 Berdasarkan Lokasi:
+        ${lokasiLines}
+
+        🔧 Berdasarkan Jenis Sarana:
+        ${jenisLines}`;
+
+      const res = await fetch("/api/sendToTelegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      const data: TelegramResponse = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal kirim pesan");
+      }
+
+      alert(data.message ?? "Pesan berhasil dikirim!");
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Telegram Error:", err.message);
+        alert(`Gagal kirim ke Telegram: ${err.message}`);
+      } else {
+        console.error("Unexpected error:", err);
+        alert("Terjadi error yang tidak diketahui");
+      }
+    }
+  };
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -120,6 +191,13 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
           onClick={() => window.location.reload()}
         >
           Refresh
+        </button>
+        <button
+          className="text-sm px-4 py-2 border rounded-md bg-teal-500 text-white hover:bg-teal-600 shadow-sm transition"
+          onClick={handleSendTelegram}
+          disabled={!selectedJenis || !selectedMonth} // ✅ disable if belum pilih
+        >
+          Telegram
         </button>
         <button 
           className="text-sm px-4 py-2 border rounded-md bg-teal-500 text-white hover:bg-teal-600 shadow-sm transition"

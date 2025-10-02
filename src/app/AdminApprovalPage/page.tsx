@@ -41,7 +41,7 @@ const AdminApproval = () => {
           const mapped: TableItem[] = data.items.map(
             (item: ApiItem, index: number) => ({
               no: String(index + 1),
-              id: item.id_item,
+              id_item: item.id_item,
               nama_item: item.nama_item,
               jenis_sarana: item.jenis_sarana,
               nomor_seri: item.nomor_ser,
