@@ -18,6 +18,7 @@ const TableAdmin: React.FC<TableProps> = ({
 
       const data = await res.json();
       console.log("id item", id_item);
+      console.log(data);
 
       if (res.ok) {
         console.log("Status updated:", data.item);
