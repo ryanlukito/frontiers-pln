@@ -1,11 +1,10 @@
 // src/app/api/export-pdf/route.ts
-import chromium from "chrome-aws-lambda";
-import puppeteer from "puppeteer-core";
 import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
 import { formatJenisSarana } from "@/types/utils";
+import playwright from "playwright-aws-lambda";
 
 async function getLogoBase64() {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
@@ -75,7 +74,9 @@ export async function GET() {
 
     // ==== 3. Ambil data rekapitulasi lewat API internal ====
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const rekapRes = await fetch(`${baseUrl}/api/rekapitulasi?bulan=${bulan}&tahun=${tahun}`);
+    const rekapRes = await fetch(
+      `${baseUrl}/api/rekapitulasi?bulan=${bulan}&tahun=${tahun}`
+    );
     const rekap = await rekapRes.json();
 
     // ==== 4. Susun HTML ====
@@ -96,9 +97,10 @@ export async function GET() {
           </tr>
         </thead>
         <tbody>
-          ${items.map((item, idx) => {
-            const i = item.inspeksi_APAP[0];
-            return `
+          ${items
+            .map((item, idx) => {
+              const i = item.inspeksi_APAP[0];
+              return `
               <tr>
                 <td>${idx + 1}</td>
                 <td>${item.nama_item ?? "-"}</td>
@@ -116,7 +118,8 @@ export async function GET() {
                 <td>${i?.kadaluwarsa ?? "Tidak"}</td>
               </tr>
             `;
-          }).join("")}
+            })
+            .join("")}
         </tbody>
       </table>
     `;
@@ -141,7 +144,9 @@ export async function GET() {
           </tr>
         </thead>
         <tbody>
-          ${rekap.per_jenis.map((row) => `
+          ${rekap.per_jenis
+            .map(
+              (row) => `
             <tr>
               <td>${formatJenisSarana(row.jenis_sarana)}</td>
               <td>${row.total}</td>
@@ -151,7 +156,9 @@ export async function GET() {
               <td>${row.belum}</td>
               <td>${row.persentase_siap}%</td>
             </tr>
-          `).join("")}
+          `
+            )
+            .join("")}
         </tbody>
       </table>
       <div class="signature-box">
@@ -205,17 +212,11 @@ export async function GET() {
       </html>
     `;
 
-    // ==== 5. Generate PDF dengan puppeteer-core + chrome-aws-lambda ====
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-    });
-
+    // ==== 5. Generate PDF dengan playwright-aws-lambda ====
+    const browser = await playwright.launchChromium({ headless: true });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    const pdfBuffer = await page.pdf({ format: "a4", printBackground: true });
+    await page.setContent(html, { waitUntil: "networkidle" });
+    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
     await browser.close();
 
     return new Response(new Uint8Array(pdfBuffer), {
