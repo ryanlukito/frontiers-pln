@@ -42,6 +42,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
   const [selectedJenis, setSelectedJenis] = useState("");
   const [jenisData, setJenisData] = useState<JenisData[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
+  const [loading, setLoading] = useState(true);
 
   const handleJenisChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedJenis(e.target.value);
@@ -153,6 +154,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/rekapitulasi?bulan=${selectedMonth}&tahun=${currentYear}`);
         const data = await res.json();
 
@@ -176,7 +178,10 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         setPreviousMonthPercentage(parseFloat(prevData.overall?.persentase_siap) || 0);
       } catch (err) {
         console.error("Gagal fetch data:", err);
+      } finally {
+        setLoading(false);
       }
+      
     };
 
     fetchData();
@@ -213,22 +218,34 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
           <div className="w-full text-center py-6">
             <h1 className="text-2xl text-gray-800 mb-8">Kesiapan Secara <span className="font-bold">Keseluruhan</span></h1>
             <div className="flex items-center justify-center">
-              <div className="w-full flex flex-col md:flex-row justify-center items-center gap-12">
+              <div className="w-full flex flex-col md:flex-row justify-center md:items-start items-center gap-12">
               {/* Previous Month Percentage */}
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-gray-600 text-sm">Persentase Bulan Sebelumnya</p>
-                  <RadialProgressChart percentage={previousMonthPercentage} /> {/* Uses previousMonthPercentage */}
+                  {loading ? (
+                    <div className="w-24 h-24 rounded-full border-4 border-gray-300 border-t-teal-500 animate-spin"></div>
+                  ) : (
+                    <RadialProgressChart percentage={previousMonthPercentage} />
+                  )}
               </div>
               {/* Current Month Percentage */}
               <div className="flex flex-col items-center gap-4">
                 <p className="text-gray-600 text-sm">Persentase Saat ini</p>
-                <RadialProgressChart percentage={overallPercentage} /> {/* Uses overallPercentage */}
+                {loading ? (
+                  <div className="w-24 h-24 rounded-full border-4 border-gray-300 border-t-teal-500 animate-spin"></div>
+                ) : (
+                  <RadialProgressChart percentage={overallPercentage} />
+                )}
               </div>
 
               {/* NEW: Location Percentage */}
               <div className="flex flex-col items-center gap-4">
                 <p className="text-gray-600 text-sm">Persentase Berdasarkan Lokasi</p>
-                <RadialProgressChart percentage={locationPercentage} />
+                {loading ? (
+                  <div className="w-24 h-24 rounded-full border-4 border-gray-300 border-t-teal-500 animate-spin"></div>
+                ) : (
+                  <RadialProgressChart percentage={locationPercentage} />
+                )}
                 <Dropdown
                   value={selectedLocation}
                   onChange={handleLocationChange}
@@ -273,7 +290,11 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
             className="border border-white bg-white"
           />
         </div>
-        {jenisData.length > 0 ? (
+        {loading ? (
+          <div className="w-full h-64 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full border-4 border-gray-300 border-t-white animate-spin"></div>
+          </div>
+        ) : jenisData.length > 0 ? (
           <Barchart jenis={selectedJenis} bulan={selectedMonth} tahun={currentYear} />
         ) : (
           <p className="text-white text-sm">Tidak ada data untuk bulan ini</p>
