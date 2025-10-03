@@ -4,9 +4,10 @@ import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
 import { formatJenisSarana } from "@/types/utils";
-// import playwright from "playwright-aws-lambda";
-import {launchChromium} from 'playwright-aws-lambda';
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
+// === Helper untuk ambil logo dalam base64 ===
 async function getLogoBase64() {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
   return fs.existsSync(logoPath)
@@ -213,11 +214,22 @@ export async function GET() {
       </html>
     `;
 
-    // ==== 5. Generate PDF dengan playwright-aws-lambda ====
-    const browser = await launchChromium({ headless: true });
+    // ==== 5. Generate PDF dengan puppeteer-core + chrome-aws-lambda ====
+    const executablePath = await chromium.executablePath;
+    if (!executablePath) {
+      throw new Error("Chromium executablePath not found.");
+    }
+
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath,
+      headless: true,
+    });
+
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle" });
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({ format: "a4", printBackground: true });
     await browser.close();
 
     return new Response(new Uint8Array(pdfBuffer), {
