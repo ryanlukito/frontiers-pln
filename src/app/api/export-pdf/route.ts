@@ -4,7 +4,8 @@ import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
 import { formatJenisSarana } from "@/types/utils";
-import playwright from "playwright-aws-lambda";
+// import playwright from "playwright-aws-lambda";
+import {launchChromium} from 'playwright-aws-lambda';
 
 async function getLogoBase64() {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
@@ -213,7 +214,7 @@ export async function GET() {
     `;
 
     // ==== 5. Generate PDF dengan playwright-aws-lambda ====
-    const browser = await playwright.launchChromium({ headless: true });
+    const browser = await launchChromium({ headless: true });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle" });
     const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
