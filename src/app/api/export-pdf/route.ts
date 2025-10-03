@@ -7,7 +7,7 @@ import { formatJenisSarana } from "@/types/utils";
 import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
-// === Helper untuk ambil logo dalam base64 ===
+// ===== Helper =====
 async function getLogoBase64() {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
   return fs.existsSync(logoPath)
@@ -47,9 +47,10 @@ function generateHeader(logoBase64: string, formattedDate: string) {
   `;
 }
 
+// ===== Route Handler =====
 export async function GET() {
   try {
-    // ==== 1. Data dasar ====
+    // --- 1. Data dasar ---
     const logoBase64 = await getLogoBase64();
     const today = new Date();
     const bulan = today.getMonth() + 1;
@@ -60,7 +61,7 @@ export async function GET() {
     const awalBulan = new Date(tahun, bulan - 1, 1);
     const akhirBulan = new Date(tahun, bulan, 0, 23, 59, 59);
 
-    // ==== 2. Ambil data dari DB ====
+    // --- 2. Ambil data dari DB ---
     const items = await prisma.item.findMany({
       where: { status_pemasangan: true, status: "APPROVED", jenis_sarana: "APAP" },
       include: {
@@ -74,14 +75,12 @@ export async function GET() {
 
     const pelaksana: User[] = await prisma.user.findMany({ take: 3 });
 
-    // ==== 3. Ambil data rekapitulasi lewat API internal ====
+    // --- 3. Ambil data rekapitulasi lewat API internal ---
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const rekapRes = await fetch(
-      `${baseUrl}/api/rekapitulasi?bulan=${bulan}&tahun=${tahun}`
-    );
+    const rekapRes = await fetch(`${baseUrl}/api/rekapitulasi?bulan=${bulan}&tahun=${tahun}`);
     const rekap = await rekapRes.json();
 
-    // ==== 4. Susun HTML ====
+    // --- 4. Susun HTML ---
     const page1 = `
       <header>${generateHeader(logoBase64, formattedDate)}</header>
       <div>
@@ -103,23 +102,23 @@ export async function GET() {
             .map((item, idx) => {
               const i = item.inspeksi_APAP[0];
               return `
-              <tr>
-                <td>${idx + 1}</td>
-                <td>${item.nama_item ?? "-"}</td>
-                <td>${item.lokasi ?? "-"}</td>
-                <td>${item.jenis_sarana}</td>
-                <td>${i?.kesesuaian_lokasi ?? "-"}</td>
-                <td>${i?.visibilitas ?? "-"}</td>
-                <td>${i?.kemudahan_akses ?? "-"}</td>
-                <td>${i?.tekanan ? "OK" : "X"}</td>
-                <td>${i?.kepenuhan_isi ? "OK" : "X"}</td>
-                <td>${i?.segel_pengaman ? "OK" : "X"}</td>
-                <td>${i?.selang_dan_nozel ? "OK" : "X"}</td>
-                <td>${i?.abnormalitas_fisik ? "Ada" : "Tidak"}</td>
-                <td>${i?.karetban_roda_dan_kereta ? "Ada" : "Tidak"}</td>
-                <td>${i?.kadaluwarsa ?? "Tidak"}</td>
-              </tr>
-            `;
+                <tr>
+                  <td>${idx + 1}</td>
+                  <td>${item.nama_item ?? "-"}</td>
+                  <td>${item.lokasi ?? "-"}</td>
+                  <td>${item.jenis_sarana}</td>
+                  <td>${i?.kesesuaian_lokasi ?? "-"}</td>
+                  <td>${i?.visibilitas ?? "-"}</td>
+                  <td>${i?.kemudahan_akses ?? "-"}</td>
+                  <td>${i?.tekanan ? "OK" : "X"}</td>
+                  <td>${i?.kepenuhan_isi ? "OK" : "X"}</td>
+                  <td>${i?.segel_pengaman ? "OK" : "X"}</td>
+                  <td>${i?.selang_dan_nozel ? "OK" : "X"}</td>
+                  <td>${i?.abnormalitas_fisik ? "Ada" : "Tidak"}</td>
+                  <td>${i?.karetban_roda_dan_kereta ? "Ada" : "Tidak"}</td>
+                  <td>${i?.kadaluwarsa ?? "Tidak"}</td>
+                </tr>
+              `;
             })
             .join("")}
         </tbody>
@@ -149,16 +148,16 @@ export async function GET() {
           ${rekap.per_jenis
             .map(
               (row) => `
-            <tr>
-              <td>${formatJenisSarana(row.jenis_sarana)}</td>
-              <td>${row.total}</td>
-              <td>${row.siap}</td>
-              <td>${row.minor}</td>
-              <td>${row.mayor}</td>
-              <td>${row.belum}</td>
-              <td>${row.persentase_siap}%</td>
-            </tr>
-          `
+              <tr>
+                <td>${formatJenisSarana(row.jenis_sarana)}</td>
+                <td>${row.total}</td>
+                <td>${row.siap}</td>
+                <td>${row.minor}</td>
+                <td>${row.mayor}</td>
+                <td>${row.belum}</td>
+                <td>${row.persentase_siap}%</td>
+              </tr>
+            `
             )
             .join("")}
         </tbody>
@@ -214,11 +213,9 @@ export async function GET() {
       </html>
     `;
 
-    // ==== 5. Generate PDF dengan puppeteer-core + chrome-aws-lambda ====
+    // --- 5. Generate PDF ---
     const executablePath = await chromium.executablePath;
-    if (!executablePath) {
-      throw new Error("Chromium executablePath not found.");
-    }
+    if (!executablePath) throw new Error("Chromium executablePath not found");
 
     const browser = await puppeteer.launch({
       args: chromium.args,
@@ -232,6 +229,7 @@ export async function GET() {
     const pdfBuffer = await page.pdf({ format: "a4", printBackground: true });
     await browser.close();
 
+    // --- 6. Response compatible dengan TypeScript ---
     return new Response(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
