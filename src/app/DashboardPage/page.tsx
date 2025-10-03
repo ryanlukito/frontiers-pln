@@ -6,6 +6,7 @@ import Barchart from "../../components/Barchart";
 import RadialProgressChart from "../../components/RadialProgress";
 import Dropdown from "@/components/Dropdown";
 import { formatJenisSarana, LokasiData, JenisData, TelegramResponse } from "@/types/utils";
+import { FaTelegramPlane } from "react-icons/fa";
 
 const monthOptions = [
   { label: "Januari", value: 1 },
@@ -43,6 +44,8 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
   const [jenisData, setJenisData] = useState<JenisData[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
   const [loading, setLoading] = useState(true);
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const handleJenisChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedJenis(e.target.value);
@@ -50,6 +53,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
 
   const handleExportPDF = async () => {
     try {
+      setPdfLoading(true);
       const res = await fetch('/api/export-pdf', {
         method: "GET",
       });
@@ -69,6 +73,8 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
     } catch (err) {
       console.error("Export PDF error:", err);
       alert("Gagal generate PDF, cek server log");
+    } finally {
+      setPdfLoading(false);
     }
   };
 
@@ -82,6 +88,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
 
   const handleSendTelegram = async () => {
     try {
+      setTelegramLoading(true);
       const bulanLabel =
         monthOptions.find((m) => m.value === selectedMonth)?.label || "";
       // const jenisLabel = selectedJenis
@@ -147,6 +154,8 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         console.error("Unexpected error:", err);
         alert("Terjadi error yang tidak diketahui");
       }
+    } finally {
+      setTelegramLoading(false);
     }
   };
 
@@ -202,13 +211,31 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
           onClick={handleSendTelegram}
           disabled={!selectedJenis || !selectedMonth} // ✅ disable if belum pilih
         >
-          Telegram
+          {telegramLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Mengirim...
+            </>
+          ) : (
+            <div className="flex gap-x-2 items-center">
+              <FaTelegramPlane/>
+              <p>Telegram</p>
+            </div>
+            
+          )}
         </button>
         <button 
           className="text-sm px-4 py-2 border rounded-md bg-teal-500 text-white hover:bg-teal-600 shadow-sm transition"
           onClick={handleExportPDF}
         >
-          Save to PDF
+          {pdfLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Menyimpan...
+            </>
+          ) : (
+            "Save to PDF"
+          )}
         </button>
       </div>
       <div className="w-full flex flex-col items-center py-6 gap-4">
