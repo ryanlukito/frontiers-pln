@@ -1,5 +1,6 @@
 // src/app/api/export-pdf/route.ts
-import { chromium } from "playwright";
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
@@ -25,20 +26,15 @@ function generateHeader(logoBase64: string, formattedDate: string) {
   return `
     <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
       <tr>
-        <!-- Logo -->
         <td style="width:15%; text-align:center; border:1px solid #000; padding:10px;">
           <img src="data:image/png;base64,${logoBase64}" style="max-width:80px; height:auto;" />
         </td>
-
-        <!-- Title Center -->
         <td style="width:55%; text-align:center; border:1px solid #000; padding:10px;">
           <p style="font-weight:bold; margin:0;">PT PLN (PERSERO) UNIT INDUK DISTRIBUSI JAKARTA RAYA</p>
           <p style="font-style:italic; margin:0;">INTEGRATED MANUAL PROCEDURE</p>
           <p style="font-weight:bold; margin:0;">FORMULIR INSPEKSI ALAT PROTEKSI KEBAKARAN</p>
           <p style="font-weight:bold; margin:0;">PEJABAT PENGENDALI K3L</p>
         </td>
-
-        <!-- Document Info -->
         <td style="width:30%; border:1px solid #000; padding:10px; font-size:12px;">
           <p style="margin:2px 0;">No. Dokumen : </p>
           <p style="margin:2px 0;">Tanggal Terbit : ${formattedDate}</p>
@@ -74,11 +70,8 @@ export async function GET() {
         },
       },
     });
-    console.log(items);
 
-    const pelaksana: User[] = await prisma.user.findMany({
-      take: 3,
-    });
+    const pelaksana: User[] = await prisma.user.findMany({ take: 3 });
 
     // ==== 3. Ambil data rekapitulasi lewat API internal ====
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -105,7 +98,6 @@ export async function GET() {
         <tbody>
           ${items.map((item, idx) => {
             const i = item.inspeksi_APAP[0];
-            console.log(i);
             return `
               <tr>
                 <td>${idx + 1}</td>
@@ -152,11 +144,11 @@ export async function GET() {
           ${rekap.per_jenis.map((row) => `
             <tr>
               <td>${formatJenisSarana(row.jenis_sarana)}</td>
+              <td>${row.total}</td>
               <td>${row.siap}</td>
               <td>${row.minor}</td>
               <td>${row.mayor}</td>
               <td>${row.belum}</td>
-              <td>${row.total}</td>
               <td>${row.persentase_siap}%</td>
             </tr>
           `).join("")}
@@ -213,11 +205,17 @@ export async function GET() {
       </html>
     `;
 
-    // ==== 5. Generate PDF ====
-    const browser = await chromium.launch({ args: ["--no-sandbox"] });
+    // ==== 5. Generate PDF dengan puppeteer-core + chrome-aws-lambda ====
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+    });
+
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle" });
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({ format: "a4", printBackground: true });
     await browser.close();
 
     return new Response(new Uint8Array(pdfBuffer), {
