@@ -175,6 +175,7 @@ const EditItemPage = () => {
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Edit Item</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Item</label>
           <InputField
             name="itemName"
             placeholder="Nama Item"
@@ -182,6 +183,7 @@ const EditItemPage = () => {
             onChange={handleChange}
           />
 
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Seri</label>
           <InputField
             name="serialNumber"
             placeholder="Nomor Seri"
@@ -275,6 +277,7 @@ const EditItemPage = () => {
           {/* Field tambahan jika APAP */}
           {formData.jenisSarana === "inspeksi_APAP" && (
             <>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
               <InputField
                 name="expiryDate"
                 type="date"
@@ -282,6 +285,7 @@ const EditItemPage = () => {
                 value={formData.expiryDate}
                 onChange={handleChange}
               />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
               <InputField
                 name="weight"
                 type="number"
@@ -310,7 +314,7 @@ const EditItemPage = () => {
               </div>
             </>
           )}
-
+          <label className="block text-sm font-medium text-gray-700 mb-1">Spesifikasi</label>
           <InputField
             name="specification"
             placeholder="Spesifikasi"
@@ -318,6 +322,7 @@ const EditItemPage = () => {
             onChange={handleChange}
           />
 
+          <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
           <InputField
             name="purchaseDate"
             type="date"
@@ -326,6 +331,7 @@ const EditItemPage = () => {
             onChange={handleChange}
           />
 
+          <label className="block text-sm font-medium text-gray-700 mb-1">Pemasok</label>
           <InputField
             name="supplier"
             placeholder="Pemasok"
@@ -333,6 +339,7 @@ const EditItemPage = () => {
             onChange={handleChange}
           />
 
+          <label className="block text-sm font-medium text-gray-700 mb-1">PIC</label>
           <InputField
             name="pic"
             placeholder="PIC"

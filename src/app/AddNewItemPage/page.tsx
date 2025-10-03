@@ -164,13 +164,14 @@ const AddNewItemPage = () => {
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">
           Tambah Item Baru
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nama Item */}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Item</label>
           <InputField
             name="itemName"
             placeholder="Nama Item"
@@ -179,6 +180,7 @@ const AddNewItemPage = () => {
           />
 
           {/* Nomor Seri */}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Seri</label>
           <InputField
             name="serialNumber"
             placeholder="Nomor Seri"
@@ -273,6 +275,7 @@ const AddNewItemPage = () => {
           {/* Jika jenis sarana = APAP → tampilkan field tambahan */}
           {formData.jenisSarana === "APAP" && (
             <>
+              <label htmlFor="">Expiry Date</label>
               <InputField
                 name="expiryDate"
                 type="date"
@@ -280,6 +283,8 @@ const AddNewItemPage = () => {
                 value={formData.expiryDate}
                 onChange={handleChange}
               />
+
+              <label htmlFor="">Weight</label>
               <InputField
                 name="weight"
                 type="number"
@@ -308,14 +313,16 @@ const AddNewItemPage = () => {
               </div>
             </>
           )}
-
+          
+          <label className="block text-sm font-medium text-gray-700 mb-1">Spesifikasi</label>
           <InputField
             name="specification"
             placeholder="Spesifikasi"
             value={formData.specification}
             onChange={handleChange}
           />
-
+          
+          <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
           <InputField
             name="purchaseDate"
             type="date"
@@ -323,14 +330,16 @@ const AddNewItemPage = () => {
             value={formData.purchaseDate}
             onChange={handleChange}
           />
-
+          
+          <label className="block text-sm font-medium text-gray-700 mb-1">Pemasok</label>
           <InputField
             name="supplier"
             placeholder="Pemasok"
             value={formData.supplier}
             onChange={handleChange}
           />
-
+          
+          <label className="block text-sm font-medium text-gray-700 mb-1">PIC</label>
           <InputField
             name="pic"
             placeholder="PIC"
