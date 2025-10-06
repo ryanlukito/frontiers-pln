@@ -128,14 +128,16 @@ const EditItemPage = () => {
         lokasi_id: formData.locationId,
         id_titik_lokasi: formData.locationPoint,
         spesifikasi: formData.specification,
-        tanggal_pembelian: formData.purchaseDate || null,
+        tanggal_pembelian: formData.purchaseDate
+        ? new Date(formData.purchaseDate).toISOString()
+        : null,
         tanggal_kadaluwarsa:
-          formData.jenisSarana === "inspeksi_APAP"
-            ? formData.expiryDate || null
+          formData.jenisSarana === "inspeksi_APAP" && formData.expiryDate
+            ? new Date(formData.expiryDate).toISOString()
             : null,
         berat:
           formData.jenisSarana === "inspeksi_APAP"
-            ? formData.weight || null
+            ? (formData.weight ? Number(formData.weight) : null)
             : null,
         jenis_APAP:
           formData.jenisSarana === "inspeksi_APAP"
