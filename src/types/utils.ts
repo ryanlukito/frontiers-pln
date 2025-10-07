@@ -30,6 +30,7 @@ export interface TableItem {
   uploadedBy?: string;
   deskripsi?: string;
   kesiapan?: string;
+  gambar?: string;
 }
 
 export interface TableProps {
@@ -52,6 +53,7 @@ export interface ApiItem {
   PIC: string;
   status_pemasangan: boolean;
   deskripsi: string;
+  gambar?: string;
 }
 
 export type InspeksiRecord = {

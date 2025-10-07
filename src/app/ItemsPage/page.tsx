@@ -32,7 +32,8 @@ const ItemsPage = () => {
     goToNext,
     goToPrevious,
     setCurrentPage,
-  } = Pagination(filteredData, 3);
+  } = Pagination(filteredData, 25);
+  // console.log("current data:", currentData);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -64,6 +65,7 @@ const ItemsPage = () => {
         const statusData = await statusRes.json();
         const statusList: ItemStatus[] = statusData.data || [];
         console.log(statusList);
+        console.log(itemsData)
 
         if (itemsData.success) {
           const mapped: TableItem[] = itemsData.items.map(
@@ -90,6 +92,7 @@ const ItemsPage = () => {
                 status: item.status_pemasangan,
                 deskripsi: item.deskripsi,
                 kesiapan: matchedStatus ? matchedStatus.status : "-", // 👈 merged
+                gambar: item.gambar,
               };
             }
           );

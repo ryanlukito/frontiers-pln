@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { TableItem, TableProps } from "../types/utils";
-import {useSession} from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { IoQrCodeOutline } from "react-icons/io5";
 import { FaArrowRight, FaPencilAlt } from "react-icons/fa";
@@ -18,8 +18,27 @@ const Table: React.FC<UpdatedTableProps> = ({
   onOpenQrModal,
   onOpenDetailModal,
 }) => {
-  const {data: session} = useSession();
-  console.log(tableContent);
+  const { data: session } = useSession();
+
+  // Sorting state for lokasi
+  const [lokasiSortOrder, setLokasiSortOrder] = useState<"asc" | "desc" | null>(null);
+
+  // Sort handler
+  const handleSortLokasi = () => {
+    setLokasiSortOrder((prev) =>
+      prev === "asc" ? "desc" : "asc"
+    );
+  };
+
+  // Apply sorting
+  const sortedContent = [...tableContent].sort((a, b) => {
+    if (!lokasiSortOrder) return 0; // no sort applied
+    const lokasiA = a.lokasi?.toLowerCase() || "";
+    const lokasiB = b.lokasi?.toLowerCase() || "";
+    if (lokasiA < lokasiB) return lokasiSortOrder === "asc" ? -1 : 1;
+    if (lokasiA > lokasiB) return lokasiSortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="overflow-x-auto w-full rounded-lg shadow-md border border-gray-200">
@@ -30,7 +49,17 @@ const Table: React.FC<UpdatedTableProps> = ({
             <th className="px-4 py-3">Nama Item</th>
             <th className="px-4 py-3">Jenis Sarana</th>
             <th className="px-4 py-3">Nomor Seri</th>
-            <th className="px-4 py-3">Lokasi</th>
+
+            {/* Lokasi header with sort button */}
+            <th
+              className="px-4 py-3 cursor-pointer select-none"
+              onClick={handleSortLokasi}
+            >
+              Lokasi{" "}
+              {lokasiSortOrder === "asc" && "▲"}
+              {lokasiSortOrder === "desc" && "▼"}
+            </th>
+
             <th className="px-4 py-3">Titik Lokasi</th>
             <th className="px-4 py-3">Spesifikasi</th>
             <th className="px-4 py-3">Tanggal Pembelian</th>
@@ -45,7 +74,7 @@ const Table: React.FC<UpdatedTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {tableContent.map((item, index) => (
+          {sortedContent.map((item, index) => (
             <tr
               key={index}
               className={
@@ -59,16 +88,23 @@ const Table: React.FC<UpdatedTableProps> = ({
               <td className="px-4 py-2">{item.lokasi}</td>
               <td className="px-4 py-2">{item.titik_lokasi}</td>
               <td className="px-4 py-2">{item.spesifikasi}</td>
-              <td className="px-4 py-2">{new Date(item.tanggal_pembelian).toLocaleDateString("id-ID")}</td>
-              <td className="px-4 py-2">{item.tanggal_kadaluwarsa ? new Date(item.tanggal_kadaluwarsa).toLocaleDateString("id-ID") : "-"}</td>
+              <td className="px-4 py-2">
+                {new Date(item.tanggal_pembelian).toLocaleDateString("id-ID")}
+              </td>
+              <td className="px-4 py-2">
+                {item.tanggal_kadaluwarsa
+                  ? new Date(item.tanggal_kadaluwarsa).toLocaleDateString("id-ID")
+                  : "-"}
+              </td>
               <td className="px-4 py-2">{item.berat ? item.berat : "-"}</td>
               <td className="px-4 py-2">{item.jenis_APAP ? item.jenis_APAP : "-"}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
-              <td className="px-4 py-2">{item.status === true ? "Terpasang" : "Tidak Terpasang"}</td>
+              <td className="px-4 py-2">
+                {item.status === true ? "Terpasang" : "Tidak Terpasang"}
+              </td>
               <td className="px-4 py-2">
                 <div className="flex items-center gap-2">
-                  {/* Circle with group for hover */}
                   <div className="relative group">
                     <span
                       className={`w-3 h-3 rounded-full block ${
@@ -83,7 +119,6 @@ const Table: React.FC<UpdatedTableProps> = ({
                           : "bg-gray-400"
                       }`}
                     ></span>
-                    {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
                       {item.kesiapan ? item.kesiapan : "-"}
                     </div>
@@ -96,47 +131,47 @@ const Table: React.FC<UpdatedTableProps> = ({
                     onClick={() => onOpenQrModal(item)}
                     className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-blue-700 transition text-xs"
                   >
-                    <IoQrCodeOutline className="text-sm"/>
+                    <IoQrCodeOutline className="text-sm" />
                   </button>
                   <button
                     onClick={() => onOpenDetailModal(item)}
                     className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-gray-700 transition text-xs"
                   >
-                    <FaArrowRight/>
+                    <FaArrowRight />
                   </button>
                   {session?.user?.role === "ADMIN" && (
-                  <Link
-                    href={`/EditItemPage/${item?.id_item}`} 
-                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-green-700 transition text-xs"
-                  >
-                    <FaPencilAlt/>
-                  </Link>
+                    <Link
+                      href={`/EditItemPage/${item?.id_item}`}
+                      className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-green-700 transition text-xs"
+                    >
+                      <FaPencilAlt />
+                    </Link>
                   )}
                   {session?.user?.role === "ADMIN" && (
-                  <button
-                  onClick={async() => {
-                    if(confirm(`Yakin ingin menghapus item ${item.nama_item}?`)) {
-                      try {
-                        const res = await fetch(`/api/items/${item.id_item}`, {
-                          method: "DELETE"
-                        })
-                        if (res.ok) {
-                          alert("Item berhasil dihapus");
-                          window.location.reload(); // or trigger re-fetch if you use SWR/React Query
-                        } else {
-                          const err = await res.json();
-                          alert(`Gagal menghapus item: ${err.error || "Unknown error"}`);
+                    <button
+                      onClick={async () => {
+                        if (confirm(`Yakin ingin menghapus item ${item.nama_item}?`)) {
+                          try {
+                            const res = await fetch(`/api/items/${item.id_item}`, {
+                              method: "DELETE",
+                            });
+                            if (res.ok) {
+                              alert("Item berhasil dihapus");
+                              window.location.reload();
+                            } else {
+                              const err = await res.json();
+                              alert(`Gagal menghapus item: ${err.error || "Unknown error"}`);
+                            }
+                          } catch (error) {
+                            console.error("Delete error:", error);
+                            alert("Terjadi kesalahan saat menghapus item");
+                          }
                         }
-                      } catch(error) {
-                        console.error("Delete error:", error);
-                        alert("Terjadi kesalahan saat menghapus item");
-                      }
-                    }
-                  }}
-                    className="px-3 py-2 bg-red-600 text-white rounded-sm hover:bg-red-800 transition text-xs"
-                  >
-                    <RiDeleteBin5Fill/>
-                  </button>
+                      }}
+                      className="px-3 py-2 bg-red-600 text-white rounded-sm hover:bg-red-800 transition text-xs"
+                    >
+                      <RiDeleteBin5Fill />
+                    </button>
                   )}
                 </div>
               </td>
