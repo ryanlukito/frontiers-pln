@@ -2,6 +2,7 @@
 
 import React from "react";
 import { TableProps } from "../types/utils";
+import toast from "react-hot-toast";
 
 const TableAdmin: React.FC<TableProps> = ({
   tableContent,
@@ -17,13 +18,14 @@ const TableAdmin: React.FC<TableProps> = ({
       });
 
       const data = await res.json();
-      console.log("id item", id_item);
-      console.log(data);
+      // console.log("id item", id_item);
+      // console.log(data);
 
       if (res.ok) {
         console.log("Status updated:", data.item);
-        alert(`Status for item ${data.item.id_item} Updated!`)
+        toast.success(`Status for item ${data.item.id_item} updated!`)
       } else {
+        toast.error(`Status for item ${data.item.id_item} not updated!`)
         console.error("Failed to update:", data.error);
       }
     } catch (error) {
