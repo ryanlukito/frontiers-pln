@@ -3,24 +3,8 @@
 import { useEffect, useState } from "react";
 import InputField from "../../components/InputField";
 import RadioOption from "../../components/RadioOptions";
-import { Lokasi } from "@/types/utils";
+import { Lokasi, jenisSarana } from "@/types/utils";
 import { useSession } from "next-auth/react";
-
-const jenisSarana = [
-  {nama: "APAP", value: "APAP" }, 
-  {nama: "SCBA", value: "scba" }, 
-  {nama: "Sprinkler", value: "sprinkler" }, 
-  {nama: "Detektor", value: "detector" }, 
-  {nama: "Hidran Bangunan", value: "hidran_bangunan" }, 
-  {nama: "Hidran Halaman", value: "hidran_halaman" }, 
-  {nama: "Rumah Pompa Hidran", value: "rumah_pompa_hidran" }, 
-  {nama: "Sarana Jalan Keluar", value: "sarana_jalan_keluar" }, 
-  {nama: "Kotak P3K", value: "kotak_p3k" }, 
-  {nama: "Spill Containment Room", value: "spill_containment_room" }, 
-  {nama: "Ruang MNS", value: "ruang_mns" }, 
-  {nama: "Fire Ball", value: "fire_ball" }, 
-  {nama: "CCTV", value: "cctv" }
-]
 
 const AddNewItemPage = () => {
   const { data: session } = useSession();
@@ -151,7 +135,7 @@ const AddNewItemPage = () => {
           file: null,
         });
         setSelectedLokasi("");
-        console.log(data);
+        // console.log(data);
       }
     } catch (err) {
       console.error(err);

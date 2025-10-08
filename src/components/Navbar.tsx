@@ -5,35 +5,35 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import {signOut, useSession} from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
   const pathName = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const {data: session} = useSession();
+  const { data: session } = useSession();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const linkClass = (path: string) =>
-    `block px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+    `px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
       pathName === path
-        ? "bg-blue-600 text-white shadow-md"
-        : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
+        ? "bg-[#2E7D32] text-white shadow-sm"
+        : "text-gray-700 hover:bg-[#E8F5E9] hover:text-[#2E7D32]"
     }`;
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-white shadow-md px-6 py-3">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <nav className="w-full sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* Logo & Brand */}
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src="/frontiers.png"
             alt="Frontiers Logo"
-            width={40}
-            height={40}
+            width={36}
+            height={36}
             className="rounded-full"
           />
-          <span className="text-xl font-bold tracking-tight text-[#08333C]">
+          <span className="text-lg font-bold tracking-tight text-[#2E7D32]">
             Frontiers
           </span>
         </Link>
@@ -46,32 +46,29 @@ const Navbar = () => {
           <Link href="/ItemsPage" className={linkClass("/ItemsPage")}>
             Items
           </Link>
-          {/* <Link href="/SettingsPage" className={linkClass("/SettingsPage")}>
-            Settings
-          </Link>
-          <Link href="/AccountPage" className={linkClass("/AccountPage")}>
-            Account
-          </Link> */}
           {session?.user?.role === "ADMIN" && (
-            <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
+            <Link
+              href="/AdminApprovalPage"
+              className={linkClass("/AdminApprovalPage")}
+            >
               Admin Approval
             </Link>
           )}
-
           {session ? (
             <button
-              onClick={() => signOut({callbackUrl: "/LoginPage"})}
-              className="ml-4 px-5 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 shadow hover:shadow-lg transition-all duration-200"
+              onClick={() => signOut({ callbackUrl: "/LoginPage" })}
+              className="ml-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
             >
               Logout
             </button>
-          ) : <Link
-            href="/LoginPage"
-            className="ml-4 px-5 py-2 rounded-full bg-[#08333C] text-white hover:bg-[#0a4c57] shadow hover:shadow-lg transition-all duration-200"
-          >
-            Login
-          </Link>}
-          
+          ) : (
+            <Link
+              href="/LoginPage"
+              className="ml-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -80,62 +77,74 @@ const Navbar = () => {
             onClick={toggleMenu}
             className="text-gray-700 focus:outline-none"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden mt-2 flex flex-col gap-2 px-4 pb-4">
-          <Link
-            href="/DashboardPage"
-            className={linkClass("/DashboardPage")}
-            onClick={toggleMenu}
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/ItemsPage"
-            className={linkClass("/ItemsPage")}
-            onClick={toggleMenu}
-          >
-            Items
-          </Link>
-          {/* <Link
-            href="/SettingsPage"
-            className={linkClass("/SettingsPage")}
-            onClick={toggleMenu}
-          >
-            Settings
-          </Link>
-          <Link
-            href="/AccountPage"
-            className={linkClass("/AccountPage")}
-            onClick={toggleMenu}
-          >
-            Account
-          </Link> */}
-          {session?.user?.role === "ADMIN" && (
-            <Link href="/AdminApprovalPage" className={linkClass("/AdminApprovalPage")}>
-              Admin Approval
-            </Link>
-          )}
-          {session ? (
-            <button
-              onClick={() => signOut({callbackUrl: "/LoginPage"})}
-              className="ml-4 px-5 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 shadow hover:shadow-lg transition-all duration-200"
-            >
-              Logout
+      {/* Mobile Drawer Menu */}
+      <div
+        className={`fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${
+          isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        onClick={toggleMenu}
+      >
+        <div
+          className={`absolute top-0 right-0 w-64 h-full bg-white shadow-lg transform transition-transform duration-300 ${
+            isMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
+            <span className="text-lg font-bold text-[#2E7D32]">Menu</span>
+            <button onClick={toggleMenu}>
+              <X size={24} className="text-gray-700" />
             </button>
-          ) : <Link
-            href="/LoginPage"
-            className="ml-4 px-5 py-2 rounded-full bg-[#08333C] text-white hover:bg-[#0a4c57] shadow hover:shadow-lg transition-all duration-200"
-          >
-            Login
-          </Link>}
+          </div>
+
+          <div className="flex flex-col gap-2 p-6">
+            <Link
+              href="/DashboardPage"
+              className={linkClass("/DashboardPage")}
+              onClick={toggleMenu}
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/ItemsPage"
+              className={linkClass("/ItemsPage")}
+              onClick={toggleMenu}
+            >
+              Items
+            </Link>
+            {session?.user?.role === "ADMIN" && (
+              <Link
+                href="/AdminApprovalPage"
+                className={linkClass("/AdminApprovalPage")}
+                onClick={toggleMenu}
+              >
+                Admin Approval
+              </Link>
+            )}
+            {session ? (
+              <button
+                onClick={() => signOut({ callbackUrl: "/LoginPage" })}
+                className="mt-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/LoginPage"
+                className="mt-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+                onClick={toggleMenu}
+              >
+                Login
+              </Link>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };
