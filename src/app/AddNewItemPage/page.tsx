@@ -10,7 +10,7 @@ import { FaArrowLeft } from "react-icons/fa";
 
 const AddNewItemPage = () => {
   const { data: session } = useSession();
-  console.log("Session Data: ", session);
+  // console.log("Session Data: ", session);
   const [formData, setFormData] = useState({
     itemName: "",
     serialNumber: "",

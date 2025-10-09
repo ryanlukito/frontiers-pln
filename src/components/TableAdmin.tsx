@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 const TableAdmin: React.FC<TableProps> = ({
   tableContent,
 }) => {
-  console.log("ini table content", tableContent)
+  // console.log("ini table content", tableContent)
 
   // const handleUpdateStatus = async(id_item: number, newStatus: "APPROVED" | "REJECTED") => {
   //   try {

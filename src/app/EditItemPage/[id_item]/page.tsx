@@ -149,7 +149,7 @@ const EditItemPage = () => {
         setMessage(data.error || "Gagal update item");
       } else {
         setMessage("✅ Item berhasil diupdate!");
-        console.log(data);
+        // console.log(data);
       }
     } catch (err) {
       console.error(err);

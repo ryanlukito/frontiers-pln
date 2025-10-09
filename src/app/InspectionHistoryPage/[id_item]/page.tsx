@@ -66,7 +66,7 @@ const InspectionHistoryPage = () => {
       });
 
       const result = await res.json();
-      console.log(result);
+      // console.log(result);
       toast.success("Berhasil dikirim ke database!");
       router.push("/ItemsPage"); 
     } catch (err) {
