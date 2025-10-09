@@ -264,7 +264,7 @@ const AddNewItemPage = () => {
           {/* Jika jenis sarana = APAP → tampilkan field tambahan */}
           {formData.jenisSarana === "APAP" && (
             <>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluwarsan</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluwarsa</label>
               <InputField
                 name="expiryDate"
                 type="date"

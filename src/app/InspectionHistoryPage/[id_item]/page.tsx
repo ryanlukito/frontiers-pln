@@ -66,8 +66,8 @@ const InspectionHistoryPage = () => {
       });
 
       const result = await res.json();
-      // console.log(result);
-      toast.success("Berhasil dikirim ke database!");
+      console.log(result);
+      toast.success(`Inspeksi id ${result.data[0].id_item} berhasil`);
       router.push("/ItemsPage"); 
     } catch (err) {
       console.error("Error submitting form:", err);
