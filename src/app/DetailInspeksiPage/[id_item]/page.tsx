@@ -44,7 +44,6 @@ const DetailInspeksiPage = ({ params }: { params: Promise<Params> }) => {
     }
   }, [id_item]);
 
-  // 🌀 Loading Animation (same style as AdminApproval)
   if (loading) {
     return (
       <div className="w-screen min-h-screen flex flex-col bg-white text-black overflow-x-hidden">

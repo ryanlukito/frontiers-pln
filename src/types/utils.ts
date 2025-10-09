@@ -55,6 +55,7 @@ export interface ApiItem {
   deskripsi: string;
   gambar?: string;
   nomor_seri?: string;
+  uploadedBy?: string;
 }
 
 export type InspeksiRecord = {

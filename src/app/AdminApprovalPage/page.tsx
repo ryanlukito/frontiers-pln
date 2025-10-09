@@ -55,7 +55,8 @@ const AdminApproval = () => {
               pemasok: item.pemasok,
               pic: item.PIC,
               status: item.status_pemasangan,
-              deskripsi: item.deskripsi
+              deskripsi: item.deskripsi,
+              uploadedBy: item.uploadedBy,
             })
           );
           setItems(mapped)
