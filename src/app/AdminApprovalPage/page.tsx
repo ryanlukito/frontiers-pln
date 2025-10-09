@@ -10,6 +10,8 @@ import { TableItem, ApiItem } from "@/types/utils";
 const AdminApproval = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState<TableItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const filteredData = items.filter((item) =>
     Object.values(item).some((val) =>
       String(val).toLowerCase().includes(searchTerm.toLowerCase())
@@ -33,6 +35,7 @@ const AdminApproval = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const res = await fetch("/api/admin-approval");
         const data = await res.json();
         console.log("data dari be", data)
@@ -60,6 +63,8 @@ const AdminApproval = () => {
         }
       } catch (error) {
         console.error("Failed to fetch items:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -78,37 +83,47 @@ const AdminApproval = () => {
         {/* Search and Add Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
           <Searchbar value={searchTerm} onChange={handleSearch} />
-          {/* <AddElement onClick={() => setIsAddModalOpen(true)} /> */}
         </div>
 
-        {/* Data Table */}
-        <TableAdmin
-          tableContent={currentData}
-        />
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64 gap-x-5">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#08333C] border-solid"></div>
+            <p className="text-lg">Loading Data...</p>
+          </div>
+        ) : currentData.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10">
+            No data available.
+          </p>
+        ) : (
+          <>
+            {/* Data Table */}
+            <TableAdmin
+              tableContent={currentData}
+            />
 
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-6">
-          <button
-            onClick={goToPrevious}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-700">
-            Page <strong>{currentPage}</strong> of {totalPages}
-          </span>
-          <button
-            onClick={goToNext}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-6">
+              <button
+                onClick={goToPrevious}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-700">
+                Page <strong>{currentPage}</strong> of {totalPages}
+              </span>
+              <button
+                onClick={goToNext}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </main>
-
-      
     </div>
   );
 };

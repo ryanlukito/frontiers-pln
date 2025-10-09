@@ -19,6 +19,8 @@ const ItemsPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<TableItem | null>(null);
   const [items, setItems] = useState<TableItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const filteredData = items.filter((item) =>
     Object.values(item).some((val) =>
       String(val).toLowerCase().includes(searchTerm.toLowerCase())
@@ -56,6 +58,7 @@ const ItemsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const [itemsRes, statusRes] = await Promise.all([
           fetch("/api/items"),
           fetch("/api/item-status"),
@@ -64,8 +67,8 @@ const ItemsPage = () => {
         const itemsData = await itemsRes.json();
         const statusData = await statusRes.json();
         const statusList: ItemStatus[] = statusData.data || [];
-        console.log(statusList);
-        console.log(itemsData)
+        // console.log(statusList);
+        // console.log(itemsData)
 
         if (itemsData.success) {
           const mapped: TableItem[] = itemsData.items.map(
@@ -101,6 +104,8 @@ const ItemsPage = () => {
         }
       } catch (error) {
         console.error("Failed to fetch items:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -123,33 +128,46 @@ const ItemsPage = () => {
           <AddElement onClick={() => setIsAddModalOpen(true)} />
         </div>
 
-        {/* Data Table */}
-        <Table
-          tableContent={currentData}
-          onOpenQrModal={(item) => handleModal("qr", item, true)}
-          onOpenDetailModal={(item) => handleModal("detail", item, true)}
-        />
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64 gap-x-5">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#08333C] border-solid"></div>
+            <p className="text-lg">Loading Data...</p>
+          </div>
+        ) : currentData.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10">
+            No data available.
+          </p>
+        ) : (
+          <>
+            {/* Data Table */}
+            <Table
+              tableContent={currentData}
+              onOpenQrModal={(item) => handleModal("qr", item, true)}
+              onOpenDetailModal={(item) => handleModal("detail", item, true)}
+            />
 
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-6">
-          <button
-            onClick={goToPrevious}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-700">
-            Page <strong>{currentPage}</strong> of {totalPages}
-          </span>
-          <button
-            onClick={goToNext}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-6">
+              <button
+                onClick={goToPrevious}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-700">
+                Page <strong>{currentPage}</strong> of {totalPages}
+              </span>
+              <button
+                onClick={goToNext}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-[#08333C] text-white rounded hover:bg-[#0a4c57] disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </main>
 
       {/* Modals */}

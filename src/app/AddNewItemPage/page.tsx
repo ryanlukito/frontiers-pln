@@ -5,6 +5,8 @@ import InputField from "../../components/InputField";
 import RadioOption from "../../components/RadioOptions";
 import { Lokasi, jenisSarana } from "@/types/utils";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
 
 const AddNewItemPage = () => {
   const { data: session } = useSession();
@@ -149,9 +151,12 @@ const AddNewItemPage = () => {
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">
-          Tambah Item Baru
-        </h1>
+        <div className="flex gap-x-3">
+          <Link href="/ItemsPage">
+            <FaArrowLeft className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-full w-7 h-7" />
+          </Link>
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">Tambah Item Baru</h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nama Item */}
