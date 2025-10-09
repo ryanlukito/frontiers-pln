@@ -2,20 +2,9 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
-import { formatJenisSarana } from "@/types/utils";
+import { formatJenisSarana, RekapJenis } from "@/types/utils";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-
-// ===== Types =====
-interface RekapJenis {
-  jenis_sarana: string;
-  total: number;
-  siap: number;
-  minor: number;
-  mayor: number;
-  belum: number;
-  persentase_siap: number;
-}
 
 // ===== Helper =====
 async function getLogoBase64(): Promise<string> {
@@ -134,6 +123,58 @@ export async function GET() {
       margin: { left: margin, right: margin },
       didDrawPage: (data) => { if (data.cursor) finalY = data.cursor.y; },
     });
+    
+    // autoTable(doc, {
+    //   startY: finalY,
+    //   head: [
+    //     [
+    //       { content: "No", rowSpan: 2 },
+    //       { content: "Lokasi", rowSpan: 2 },
+    //       { content: "Jenis", rowSpan: 2 },
+    //       { content: "Berat (kg)", rowSpan: 2 },
+    //       { content: "Tekanan", colSpan: 2 },
+    //       { content: "Kondisi Luar Tabung", colSpan: 6 },
+    //       { content: "Kartu Bukti Pemeriksaan", colSpan: 4 },
+    //       { content: "Metode Pemenuhan", colSpan: 2 },
+    //       { content: "Keterangan", rowSpan: 2 },
+    //     ],
+    //     [
+    //       "Green", "Red", // Tekanan
+    //       "Tabung", "Handle", "Label", "Selang", "Label", "Isi", // Kondisi Luar
+    //       "Berlaku", "Isi", "Ganti", "Tera", // Kartu Bukti
+    //       "Isi", "Ganti", // Metode
+    //     ],
+    //   ],
+    //   body: checklistBody, // you can align your data to this structure
+    //   styles: {
+    //     fontSize: 6,
+    //     cellPadding: 1.5,
+    //     halign: "center",
+    //     valign: "middle",
+    //     lineColor: [0, 0, 0],
+    //     lineWidth: 0.1,
+    //     textColor: [0, 0, 0],
+    //   },
+    //   headStyles: {
+    //     fillColor: [230, 230, 230],
+    //     textColor: [0, 0, 0],
+    //     fontStyle: "bold",
+    //     halign: "center",
+    //     valign: "middle",
+    //     lineWidth: 0.1,
+    //   },
+    //   columnStyles: {
+    //     0: { halign: "center", cellWidth: 20 }, // No
+    //     1: { halign: "left", cellWidth: 80 },  // Lokasi
+    //     2: { halign: "center", cellWidth: 50 }, // Jenis
+    //     3: { halign: "center", cellWidth: 30 }, // Berat
+    //   },
+    //   theme: "grid",
+    //   margin: { left: margin, right: margin },
+    //   didDrawPage: (data) => {
+    //     if (data.cursor) finalY = data.cursor.y;
+    //   },
+    // });
 
     // Rekap Table
     autoTable(doc, {

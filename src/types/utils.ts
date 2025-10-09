@@ -286,6 +286,16 @@ export type LokasiAPI = {
   nama_lokasi: string;
 };
 
+export interface RekapJenis {
+  jenis_sarana: string;
+  total: number;
+  siap: number;
+  minor: number;
+  mayor: number;
+  belum: number;
+  persentase_siap: number;
+}
+
 export function formatColumnName(name: string): string {
   const withSpaces = name.replace(/_/g, " ");
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
