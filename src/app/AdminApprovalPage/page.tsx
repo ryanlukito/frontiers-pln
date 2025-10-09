@@ -38,7 +38,7 @@ const AdminApproval = () => {
         setIsLoading(true);
         const res = await fetch("/api/admin-approval");
         const data = await res.json();
-        console.log("data dari be", data)
+        // console.log("data dari be", data)
 
         if (data.success) {
           const mapped: TableItem[] = data.items.map(
@@ -47,7 +47,7 @@ const AdminApproval = () => {
               id_item: item.id_item,
               nama_item: item.nama_item,
               jenis_sarana: item.jenis_sarana,
-              nomor_seri: item.nomor_ser,
+              nomor_seri: item.nomor_seri,
               lokasi: item.nama_lokasi,
               titik_lokasi: item.titik_lokasi,
               spesifikasi: item.spesifikasi,
@@ -59,7 +59,7 @@ const AdminApproval = () => {
             })
           );
           setItems(mapped)
-          // console.log(items)
+          // console.log("mapped", mapped)
         }
       } catch (error) {
         console.error("Failed to fetch items:", error);

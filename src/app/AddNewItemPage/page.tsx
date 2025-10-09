@@ -264,7 +264,7 @@ const AddNewItemPage = () => {
           {/* Jika jenis sarana = APAP → tampilkan field tambahan */}
           {formData.jenisSarana === "APAP" && (
             <>
-              <label htmlFor="">Expiry Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluwarsan</label>
               <InputField
                 name="expiryDate"
                 type="date"
@@ -273,7 +273,7 @@ const AddNewItemPage = () => {
                 onChange={handleChange}
               />
 
-              <label htmlFor="">Weight</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Berat</label>
               <InputField
                 name="weight"
                 type="number"

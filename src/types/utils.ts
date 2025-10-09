@@ -54,6 +54,7 @@ export interface ApiItem {
   status_pemasangan: boolean;
   deskripsi: string;
   gambar?: string;
+  nomor_seri?: string;
 }
 
 export type InspeksiRecord = {
