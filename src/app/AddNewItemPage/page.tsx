@@ -5,10 +5,12 @@ import InputField from "../../components/InputField";
 import RadioOption from "../../components/RadioOptions";
 import { Lokasi, jenisSarana } from "@/types/utils";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
 
 const AddNewItemPage = () => {
   const { data: session } = useSession();
-  console.log("Session Data: ", session);
+  // console.log("Session Data: ", session);
   const [formData, setFormData] = useState({
     itemName: "",
     serialNumber: "",
@@ -149,9 +151,12 @@ const AddNewItemPage = () => {
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">
-          Tambah Item Baru
-        </h1>
+        <div className="flex gap-x-3">
+          <Link href="/ItemsPage">
+            <FaArrowLeft className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-full w-7 h-7" />
+          </Link>
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">Tambah Item Baru</h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nama Item */}
@@ -259,7 +264,7 @@ const AddNewItemPage = () => {
           {/* Jika jenis sarana = APAP → tampilkan field tambahan */}
           {formData.jenisSarana === "APAP" && (
             <>
-              <label htmlFor="">Expiry Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluwarsan</label>
               <InputField
                 name="expiryDate"
                 type="date"
@@ -268,7 +273,7 @@ const AddNewItemPage = () => {
                 onChange={handleChange}
               />
 
-              <label htmlFor="">Weight</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Berat</label>
               <InputField
                 name="weight"
                 type="number"

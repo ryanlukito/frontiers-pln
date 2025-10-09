@@ -17,8 +17,8 @@ const Navbar = () => {
   const linkClass = (path: string) =>
     `px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
       pathName === path
-        ? "bg-[#2E7D32] text-white shadow-sm"
-        : "text-gray-700 hover:bg-[#E8F5E9] hover:text-[#2E7D32]"
+        ? "bg-teal-500 text-white shadow-sm"
+        : "text-gray-700 hover:bg-teal-100 hover:text-gray-500"
     }`;
 
   return (
@@ -57,14 +57,14 @@ const Navbar = () => {
           {session ? (
             <button
               onClick={() => signOut({ callbackUrl: "/LoginPage" })}
-              className="ml-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+              className="ml-4 px-5 py-2 rounded-full bg-red-500 text-white hover:bg-red-700 transition-colors duration-200 shadow-sm"
             >
               Logout
             </button>
           ) : (
             <Link
               href="/LoginPage"
-              className="ml-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+              className="ml-4 px-5 py-2 rounded-full bg-teal-500 text-white hover:bg-teal-700 transition-colors duration-200 shadow-sm"
             >
               Login
             </Link>
@@ -129,14 +129,14 @@ const Navbar = () => {
             {session ? (
               <button
                 onClick={() => signOut({ callbackUrl: "/LoginPage" })}
-                className="mt-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+                className="ml-4 px-5 py-2 rounded-full bg-red-500 text-white hover:bg-red-700 transition-colors duration-200 shadow-sm"
               >
                 Logout
               </button>
             ) : (
               <Link
                 href="/LoginPage"
-                className="mt-4 px-5 py-2 rounded-full bg-[#2E7D32] text-white hover:bg-[#256528] transition-colors duration-200 shadow-sm"
+                className="ml-4 px-5 py-2 rounded-full bg-teal-500 text-white hover:bg-teal-700 transition-colors duration-200 shadow-sm"
                 onClick={toggleMenu}
               >
                 Login

@@ -7,31 +7,55 @@ import toast from "react-hot-toast";
 const TableAdmin: React.FC<TableProps> = ({
   tableContent,
 }) => {
-  console.log(tableContent)
+  // console.log("ini table content", tableContent)
 
-  const handleUpdateStatus = async(id_item: number, newStatus: "APPROVED" | "REJECTED") => {
-    try {
-      const res = await fetch(`/api/admin-approval/${id_item}/status`, {
-        method: "PATCH",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({newStatus}),
+  // const handleUpdateStatus = async(id_item: number, newStatus: "APPROVED" | "REJECTED") => {
+  //   try {
+  //     const res = await fetch(`/api/admin-approval/${id_item}/status`, {
+  //       method: "PATCH",
+  //       headers: {"Content-Type": "application/json"},
+  //       body: JSON.stringify({newStatus}),
+  //     });
+
+  //     const data = await res.json();
+  //     // console.log("id item", id_item);
+  //     // console.log(data);
+
+  //     if (res.ok) {
+  //       // console.log("Status updated:", data.item);
+  //       toast.success(`Status for item ${data.item.id_item} updated!`)
+  //     } else {
+  //       toast.error(`Status for item ${data.item.id_item} not updated!`)
+  //       console.error("Failed to update:", data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating item:", error);
+  //   }
+  // }
+
+  const handleUpdateStatus = async (
+  id_item: number,
+  newStatus: "APPROVED" | "REJECTED"
+  ) => {
+    const patchPromise = fetch(`/api/admin-approval/${id_item}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ newStatus }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || `Gagal memperbarui item #${id_item}`);
+        }
+        return data;
       });
 
-      const data = await res.json();
-      // console.log("id item", id_item);
-      // console.log(data);
-
-      if (res.ok) {
-        console.log("Status updated:", data.item);
-        toast.success(`Status for item ${data.item.id_item} updated!`)
-      } else {
-        toast.error(`Status for item ${data.item.id_item} not updated!`)
-        console.error("Failed to update:", data.error);
-      }
-    } catch (error) {
-      console.error("Error updating item:", error);
-    }
-  }
+    await toast.promise(patchPromise, {
+      loading: `⏳ Updating status for item #${id_item}...`,
+      success: (data) => `✅ Status for item #${data.item.id_item} updated!`,
+      error: (err) => `❌ ${err.message || "Failed to update status"}`,
+    });
+  };
 
   return (
     <div className="overflow-x-auto w-full rounded-lg shadow-md border border-gray-200">
@@ -68,10 +92,10 @@ const TableAdmin: React.FC<TableProps> = ({
               <td className="px-4 py-2">{item.lokasi}</td>
               <td className="px-4 py-2">{item.titik_lokasi}</td>
               <td className="px-4 py-2">{item.spesifikasi}</td>
-              <td className="px-4 py-2">{new Date(item.tanggal_pembelian).toLocaleString("id-ID")}</td>
+              <td className="px-4 py-2">{new Date(item.tanggal_pembelian).toLocaleDateString("id-ID")}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
-              <td className="px-4 py-2">{item.status}</td>
+              <td className="px-4 py-2">{item.status === true ? "Terpasang" : "Tidak Terpasang"}</td>
               <td className="px-4 py-2">{item.uploadedBy}</td>
               <td className="px-4 py-2 flex justify-center gap-2">
                 <button

@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { TableItem, TableProps } from "../types/utils";
+import { TableItem, TableProps, formatColumnName } from "../types/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { IoQrCodeOutline } from "react-icons/io5";
 import { FaArrowRight, FaPencilAlt } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
+import toast from "react-hot-toast";
 
 interface UpdatedTableProps extends TableProps {
   onOpenQrModal: (item: TableItem) => void;
@@ -20,17 +21,14 @@ const Table: React.FC<UpdatedTableProps> = ({
 }) => {
   const { data: session } = useSession();
 
-  // Sorting state for lokasi
   const [lokasiSortOrder, setLokasiSortOrder] = useState<"asc" | "desc" | null>(null);
 
-  // Sort handler
   const handleSortLokasi = () => {
     setLokasiSortOrder((prev) =>
       prev === "asc" ? "desc" : "asc"
     );
   };
 
-  // Apply sorting
   const sortedContent = [...tableContent].sort((a, b) => {
     if (!lokasiSortOrder) return 0; // no sort applied
     const lokasiA = a.lokasi?.toLowerCase() || "";
@@ -97,14 +95,14 @@ const Table: React.FC<UpdatedTableProps> = ({
                   : "-"}
               </td>
               <td className="px-4 py-2">{item.berat ? item.berat : "-"}</td>
-              <td className="px-4 py-2">{item.jenis_APAP ? item.jenis_APAP : "-"}</td>
+              <td className="px-4 py-2">{formatColumnName(item.jenis_APAP ? item.jenis_APAP : "-")}</td>
               <td className="px-4 py-2">{item.pemasok}</td>
               <td className="px-4 py-2">{item.pic}</td>
               <td className="px-4 py-2">
                 {item.status === true ? "Terpasang" : "Tidak Terpasang"}
               </td>
               <td className="px-4 py-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <div className="relative group">
                     <span
                       className={`w-3 h-3 rounded-full block ${
@@ -125,24 +123,25 @@ const Table: React.FC<UpdatedTableProps> = ({
                   </div>
                 </div>
               </td>
+
               <td className="px-4 py-2">
                 <div className="flex justify-center gap-2">
                   <button
                     onClick={() => onOpenQrModal(item)}
-                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-blue-700 transition text-xs"
+                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-teal-700 transition text-xs"
                   >
                     <IoQrCodeOutline className="text-sm" />
                   </button>
                   <button
                     onClick={() => onOpenDetailModal(item)}
-                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-gray-700 transition text-xs"
+                    className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-teal-700 transition text-xs"
                   >
                     <FaArrowRight />
                   </button>
                   {session?.user?.role === "ADMIN" && (
                     <Link
                       href={`/EditItemPage/${item?.id_item}`}
-                      className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-green-700 transition text-xs"
+                      className="px-3 py-2 bg-[#32A38C] text-white rounded-sm hover:bg-teal-700 transition text-xs"
                     >
                       <FaPencilAlt />
                     </Link>
@@ -156,15 +155,15 @@ const Table: React.FC<UpdatedTableProps> = ({
                               method: "DELETE",
                             });
                             if (res.ok) {
-                              alert("Item berhasil dihapus");
+                              toast.success("Item berhasil dihapus");
                               window.location.reload();
                             } else {
                               const err = await res.json();
-                              alert(`Gagal menghapus item: ${err.error || "Unknown error"}`);
+                              toast.error(`Gagal menghapus item: ${err.error || "Unknown error"}`);
                             }
                           } catch (error) {
                             console.error("Delete error:", error);
-                            alert("Terjadi kesalahan saat menghapus item");
+                            toast.error("Terjadi kesalahan saat menghapus item");
                           }
                         }
                       }}

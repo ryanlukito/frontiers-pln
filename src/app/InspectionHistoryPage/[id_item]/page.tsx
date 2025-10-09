@@ -66,7 +66,7 @@ const InspectionHistoryPage = () => {
       });
 
       const result = await res.json();
-      console.log(result);
+      // console.log(result);
       toast.success("Berhasil dikirim ke database!");
       router.push("/ItemsPage"); 
     } catch (err) {
@@ -80,7 +80,7 @@ const InspectionHistoryPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white text-black">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#51B5DD]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#08333C]"></div>
         <span className="ml-4 text-lg font-medium">Loading data...</span>
       </div>
     );

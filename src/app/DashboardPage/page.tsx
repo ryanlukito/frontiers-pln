@@ -7,6 +7,7 @@ import RadialProgressChart from "../../components/RadialProgress";
 import Dropdown from "@/components/Dropdown";
 import { formatJenisSarana, LokasiData, JenisData, TelegramResponse } from "@/types/utils";
 import { FaTelegramPlane } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const monthOptions = [
   { label: "Januari", value: 1 },
@@ -72,7 +73,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Export PDF error:", err);
-      alert("Gagal generate PDF, cek server log");
+      toast.error("Gagal generate PDF, cek server log");
     } finally {
       setPdfLoading(false);
     }
@@ -145,14 +146,14 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         throw new Error(data.error || "Gagal kirim pesan");
       }
 
-      alert(data.message ?? "Pesan berhasil dikirim!");
+      toast.success(data.message ?? "Pesan berhasil dikirim!");
     } catch (err) {
       if (err instanceof Error) {
         console.error("Telegram Error:", err.message);
-        alert(`Gagal kirim ke Telegram: ${err.message}`);
+        toast.error(`Gagal kirim ke Telegram: ${err.message}`);
       } else {
         console.error("Unexpected error:", err);
-        alert("Terjadi error yang tidak diketahui");
+        toast.error("Terjadi error yang tidak diketahui");
       }
     } finally {
       setTelegramLoading(false);
