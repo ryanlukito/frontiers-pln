@@ -210,7 +210,7 @@ const [overallPercentage, setOverallPercentage] = useState<number>(0);
         <button
           className="text-sm px-4 py-2 border rounded-md bg-teal-500 text-white hover:bg-teal-600 shadow-sm transition"
           onClick={handleSendTelegram}
-          disabled={!selectedJenis || !selectedMonth} // ✅ disable if belum pilih
+          // disabled={!selectedJenis || !selectedMonth} // ✅ disable if belum pilih
         >
           {telegramLoading ? (
             <>

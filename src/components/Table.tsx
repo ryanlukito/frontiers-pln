@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { TableItem, TableProps, formatColumnName } from "../types/utils";
+import { TableItem, TableProps, formatColumnName, formatJenisSarana } from "../types/utils";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { IoQrCodeOutline } from "react-icons/io5";
@@ -81,7 +81,7 @@ const Table: React.FC<UpdatedTableProps> = ({
             >
               <td className="px-4 py-2">{item.no}</td>
               <td className="px-4 py-2">{item.nama_item}</td>
-              <td className="px-4 py-2">{item.jenis_sarana}</td>
+              <td className="px-4 py-2">{formatJenisSarana(item.jenis_sarana)}</td>
               <td className="px-4 py-2">{item.nomor_seri}</td>
               <td className="px-4 py-2">{item.lokasi}</td>
               <td className="px-4 py-2">{item.titik_lokasi}</td>
