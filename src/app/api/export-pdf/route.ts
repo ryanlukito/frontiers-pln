@@ -2,7 +2,8 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import {autoTable, CellInput} from "jspdf-autotable";
+import { formatJenisSarana } from "@/types/utils";
 
 async function getLogoBase64(): Promise<string> {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
@@ -27,6 +28,8 @@ export async function GET() {
         jenis_sarana: "APAP",
       },
       include: {
+        nama_lokasi: true,            // 🔹 fetch full lokasi object
+        lokasi_titik_lokasi: true,     // 🔹 fetch full titik_lokasi object
         inspeksi_APAP: {
           where: { createdAt: { gte: awalBulan, lte: akhirBulan } },
           orderBy: { createdAt: "desc" },
@@ -39,12 +42,12 @@ export async function GET() {
     // 🔹 Group berdasarkan lokasi
     const groupedByLokasi: Record<string, typeof items> = {};
     for (const item of items) {
-      const lokasiUtama = item.lokasi || "TANPA LOKASI";
+      const lokasiUtama = item.nama_lokasi.nama_lokasi || "TANPA LOKASI";
       if (!groupedByLokasi[lokasiUtama]) groupedByLokasi[lokasiUtama] = [];
       groupedByLokasi[lokasiUtama].push(item);
     }
 
-    // 🔹 Siapkan PDF
+    // 🔹 Siapkan PDF  
     const doc = new jsPDF({ unit: "pt", format: "a4" });
     const margin = 15;
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -59,7 +62,7 @@ export async function GET() {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
 
-    let finalY = 70;
+    const finalY = 70;
 
     // --- Header tabel mengikuti model inspeksi_APAP ---
     const head = [
@@ -83,7 +86,7 @@ export async function GET() {
       ],
     ];
 
-    const checklistBody: any[] = [];
+    const checklistBody: CellInput[][] = [];
 
     // 🔹 Generate baris berdasarkan lokasi
     for (const [lokasi, itemList] of Object.entries(groupedByLokasi)) {
@@ -107,21 +110,22 @@ export async function GET() {
         const i = item.inspeksi_APAP[0];
 
         checklistBody.push([
-          item.nomor_ser ?? "-",
-          item.titik_lokasi ?? "-",
-          item.jenis_APAP ?? "-",
+          // index,
+          item.nomor_ser,
+          item.lokasi_titik_lokasi?.nama_titik_lokasi ?? "-",
+          item.jenis_APAP ? formatJenisSarana(item.jenis_APAP) : "-",
           item.berat?.toString() ?? "-",
-          i?.kesesuaian_lokasi ? "✓" : "X",
-          i?.visibilitas ? "✓" : "X",
-          i?.kemudahan_akses ? "✓" : "X",
-          i?.tekanan ? "✓" : "-", // Green
-          // i && i.tekanan === false ? "✓" : "-", // Red
-          i?.kepenuhan_isi ? "✓" : "X",
-          i?.segel_pengaman ? "✓" : "X",
-          i?.selang_dan_nozel ? "✓" : "X",
-          i?.abnormalitas_fisik ? "✓" : "X",
-          i?.karetban_roda_dan_kereta ? "✓" : "X",
-          i?.kadaluwarsa ? "✓" : "X",
+          i?.kesesuaian_lokasi ? "Yes" : "No",
+          i?.visibilitas ? "Yes" : "No",
+          i?.kemudahan_akses ? "Yes" : "No",
+          i?.tekanan ? "Yes" : "-", // Green
+          // i && i.tekanan === false ? "Yes" : "-", // Red
+          i?.kepenuhan_isi ? "Yes" : "No",
+          i?.segel_pengaman ? "Yes" : "No",
+          i?.selang_dan_nozel ? "Yes" : "No",
+          i?.abnormalitas_fisik ? "Yes" : "No",
+          i?.karetban_roda_dan_kereta ? "Yes" : "No",
+          i?.kadaluwarsa ? "Yes" : "No",
           item.tanggal_kadaluwarsa
             ? new Date(item.tanggal_kadaluwarsa).toLocaleDateString("id-ID")
             : "-",
@@ -172,3 +176,57 @@ export async function GET() {
     });
   }
 }
+
+// import fs from "fs";
+// import path from "path";
+// import { prisma } from "@/lib/db";
+// import { jsPDF } from "jspdf";
+// import autoTable from "jspdf-autotable";
+// import { formatJenisSarana } from "@/types/utils";
+
+// async function getLogoBase64(): Promise<string> {
+//   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
+//   return fs.existsSync(logoPath) ? fs.readFileSync(logoPath).toString("base64") : "";
+// }
+
+// export async function GET() {
+//   try {
+//     const today = new Date();
+//     const bulan = today.getMonth() + 1;
+//     const tahun = today.getFullYear();
+
+//     const awalBulan = new Date(tahun, bulan - 1, 1);
+//     const akhirBulan = new Date(tahun, bulan, 0, 23, 59, 59);
+
+//     // 🔹 Ambil data item + inspeksi
+//     const items = await prisma.item.findMany({
+//       where: {
+//         status_pemasangan: true,
+//         status: "APPROVED",
+//         jenis_sarana: "APAP",
+//       },
+//       include: {
+//         nama_lokasi: true,            // 🔹 fetch full lokasi object
+//         lokasi_titik_lokasi: true,      // 🔹 fetch full titik_lokasi object
+//         inspeksi_APAP: {
+//           where: { createdAt: { gte: awalBulan, lte: akhirBulan } },
+//           orderBy: { createdAt: "desc" },
+//           take: 1,
+//         },
+//       },
+//       orderBy: { lokasi: "asc" },
+//     });
+
+//     // ✅ Return the raw query result
+//     return new Response(JSON.stringify(items, null, 2), {
+//       status: 200,
+//       headers: { "Content-Type": "application/json" },
+//     });
+
+//   } catch (err) {
+//     console.error("Error fetching items:", err);
+//     return new Response(JSON.stringify({ error: "Gagal mengambil data" }), {
+//       status: 500,
+//     });
+//   }
+// }
