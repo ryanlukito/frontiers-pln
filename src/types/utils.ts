@@ -331,3 +331,11 @@ export const jenisSarana = [
   {nama: "Fire Ball", value: "fire_ball" }, 
   {nama: "CCTV", value: "cctv" }
 ]
+
+export function getTanggalIndonesia(date = new Date()): string {
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
