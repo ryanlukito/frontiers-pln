@@ -119,6 +119,7 @@ export interface InputFieldProps {
 
 export interface QRCodeProps {
   id: number;
+  size?: number;
 }
 
 export interface BarchartProps {
