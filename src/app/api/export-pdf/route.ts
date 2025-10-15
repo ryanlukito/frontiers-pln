@@ -2,25 +2,15 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { User } from "@prisma/client";
-import { formatJenisSarana, RekapJenis } from "@/types/utils";
+import { formatJenisSarana, RekapJenis, getTanggalIndonesia } from "@/types/utils";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-// ===== Helper =====
 async function getLogoBase64(): Promise<string> {
   const logoPath = path.join(process.cwd(), "public", "logo_laporan.jpg");
   return fs.existsSync(logoPath) ? fs.readFileSync(logoPath).toString("base64") : "";
 }
 
-function getTanggalIndonesia(date = new Date()): string {
-  return date.toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-// ===== Route Handler =====
 export async function GET() {
   try {
     const logoBase64 = await getLogoBase64();
