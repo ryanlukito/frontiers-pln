@@ -22,7 +22,11 @@ const Navbar = () => {
     }`;
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+    <nav
+      className={`w-full sticky top-0 z-50 border-b border-gray-200 shadow-sm transition-colors duration-300 ${
+        isMenuOpen ? "bg-white" : "bg-white/80 backdrop-blur-md"
+      }`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* Logo & Brand */}
         <Link href="/" className="flex items-center gap-2">
@@ -33,7 +37,11 @@ const Navbar = () => {
             height={36}
             className="rounded-full"
           />
-          <span className="text-lg font-bold tracking-tight text-[#2E7D32]">
+          <span
+            className={`text-lg font-bold tracking-tight transition-colors duration-300 ${
+              isMenuOpen ? "text-gray-800" : "text-[#2E7D32]"
+            }`}
+          >
             Frontiers
           </span>
         </Link>
@@ -75,7 +83,9 @@ const Navbar = () => {
         <div className="md:hidden">
           <button
             onClick={toggleMenu}
-            className="text-gray-700 focus:outline-none"
+            className={`focus:outline-none transition-colors duration-300 ${
+              isMenuOpen ? "text-gray-800" : "text-gray-700"
+            }`}
           >
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
