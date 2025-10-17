@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { IoMdClose } from "react-icons/io";
-import Image from "next/image";
+// import Image from "next/image";
 import { TableItem } from "@/types/utils";
 import Link from "next/link";
 import QRCode from "./QRCode";
@@ -11,52 +11,68 @@ import { useReactToPrint } from "react-to-print";
 interface QRCodeModalProps {
   item: TableItem;
   onClose: () => void;
+  location?: string; // Optional: Make location dynamic
 }
 
 const PrintableModal = React.forwardRef<HTMLDivElement, QRCodeModalProps>(
-  ({ item, onClose }, ref) => {
+  ({ item, onClose, location }, ref) => {
     return (
-      <div
-        ref={ref}
-        className="bg-white w-[90%] max-w-2xl max-h-[90vh] rounded-2xl p-6 flex flex-col relative shadow-2xl overflow-hidden"
-      >
-        {/* Close Button */}
+      // This is the modal container, which includes non-printable elements
+      <div className="bg-white w-auto max-w-4xl max-h-[90vh] rounded-2xl p-4 flex flex-col relative shadow-2xl overflow-hidden">
+        {/* Close Button & Header - Will be hidden during printing */}
         <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl"
+          className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl z-10 print:hidden"
           onClick={onClose}
         >
           <IoMdClose />
         </button>
-
-        {/* Header */}
-        <h2 className="mb-6 text-lg font-semibold text-center text-blue-600">
-          QR Code
+        <h2 className="mb-4 text-lg font-semibold text-center text-blue-600 print:hidden">
+          Print Preview
         </h2>
 
-        {/* Content */}
-        <div className="flex flex-col items-center gap-6 flex-1 justify-center">
-          {/* QR Code Section */}
-          <div className="w-44 h-44 flex items-center justify-center border rounded-xl shadow-md bg-gray-50">
-            <QRCode id={item.id_item} />
-          </div>
+        {/* This is the printable area that the ref is attached to */}
+        <div ref={ref} className="p-2 bg-white">
+          {/* Main card with double border */}
+          <div className="border-2 border-black p-1">
+            <div className="border border-black p-6">
+              {/* Content Area: Two-column layout */}
+              <div className="flex items-center justify-between gap-8">
+                {/* Left Column */}
+                <div className="flex flex-col items-center justify-between h-[320px] w-[240px]">
+                  {/* 1. Logo */}
+                  <div className="w-40">
+                    <img
+                      src="/frontiers.png" // Using existing logo path
+                      alt="Frontiers Logo"
+                      width={160}
+                      height={40}
+                      // objectFit="contain"
+                    />
+                  </div>
 
-          {/* Item Details Section */}
-          <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-xl shadow-inner w-full">
-            <Image
-              src="/frontiers.png"
-              alt="logo frontiers"
-              width={80}
-              height={80}
-              className="rounded-lg shadow-sm"
-            />
-            <div>
-              <h1 className="text-lg font-semibold">{item?.nama_item}</h1>
-              <h2 className="text-sm text-gray-500">S/N: {item?.nomor_seri}</h2>
-              <p className="mt-2 text-xs text-gray-600 leading-relaxed">
-                This item is registered under{" "}
-                <span className="font-medium">Frontiers</span>. Use the QR code
-                for quick inspection access.
-              </p>
+                  {/* 2. Item Name */}
+                  <div className="bg-gray-100 border border-gray-300 rounded-lg shadow-inner py-3 px-6 text-center">
+                    <h1 className="text-3xl font-bold tracking-wider text-gray-800">
+                      {`${item?.nama_item}-${item?.id_item} `|| "-"}
+                    </h1>
+                  </div>
+
+                  {/* 3. Scan Me Image */}
+                  <div className="text-center">
+                    <QRCode id={item.id_item} size={100} />
+                  </div>
+
+                  {/* 4. Location Text */}
+                  <p className="text-center font-semibold text-gray-800 text-lg">
+                    {location || "PLN UP3 BULUNGAN"}
+                  </p>
+                </div>
+
+                {/* Right Column (Large QR Code) */}
+                <div className="w-[320px] h-[320px] flex items-center justify-center">
+                  <QRCode id={item.id_item} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -78,7 +94,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ item, onClose }) => {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Modal */}
+      {/* Modal */}A
       <PrintableModal ref={modalRef} item={item} onClose={onClose} />
 
       {/* Action Buttons - Now centered below modal */}

@@ -4,12 +4,12 @@ import React from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { QRCodeProps } from '@/types/utils'
 
-const QRCode: React.FC<QRCodeProps> = ({id}) => {
+const QRCode: React.FC<QRCodeProps> = ({id, size}) => {
 
   const url = `${window.location.origin}/InspectionHistoryPage/${id}`;
   return (
     <div className='flex flex-col items-center gap-4'>
-        <QRCodeCanvas value={url} size={200}/>
+        <QRCodeCanvas value={url} size={size || 200}/>
         {/* <p className='text-sm text-gray-600'>{url}</p> */}
     </div>
   )
