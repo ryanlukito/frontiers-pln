@@ -297,6 +297,23 @@ export interface RekapJenis {
   persentase_siap: number;
 }
 
+export interface RekapRow {
+  lokasi: string;
+  jenis_sarana: string;
+  total: number;
+  siap: number;
+  minor: number;
+  mayor: number;
+  belum: number;
+  persentase: string;
+}
+
+export type InspeksiList = Record<string, boolean | string | number | null | Date | undefined>;
+
+export interface ItemWithJenisSarana {
+  jenis_sarana: string;
+}
+
 export function formatColumnName(name: string): string {
   const withSpaces = name.replace(/_/g, " ");
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
