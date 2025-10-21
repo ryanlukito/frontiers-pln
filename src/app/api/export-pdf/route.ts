@@ -162,7 +162,7 @@ export async function GET() {
       if (!groupedByLokasi[lokasiUtama]) groupedByLokasi[lokasiUtama] = [];
       groupedByLokasi[lokasiUtama].push(item);
     }
-
+    
     const groupedRekapByLokasi: Record<string, RekapRow[]> = {};
     for (const r of rekapPerJenis) {
       const lokasi = r.lokasi || "TANPA LOKASI";
@@ -213,6 +213,12 @@ export async function GET() {
     // 🔹 Generate baris berdasarkan lokasi
     for (const [lokasi, itemList] of Object.entries(groupedByLokasi)) {
       // Baris lokasi (merge penuh)
+      const sortedItems = itemList.sort((a, b) => {
+        const namaA = a.lokasi_titik_lokasi?.nama_titik_lokasi?.toLowerCase() ?? "";
+        const namaB = b.lokasi_titik_lokasi?.nama_titik_lokasi?.toLowerCase() ?? "";
+        return namaA.localeCompare(namaB);
+      });
+
       checklistBody.push([
         {
           content: lokasi.toUpperCase(),
@@ -228,7 +234,7 @@ export async function GET() {
         },
       ]);
 
-      for (const item of itemList) {
+      for (const item of sortedItems) {
         const i = item.inspeksi_APAP[0];
         checklistBody.push([
           item.nomor_ser ?? "-",
@@ -336,15 +342,22 @@ export async function GET() {
       body: rekapBody,
       theme: "grid",
       styles: {
-        fontSize: 7,
+        fontSize: 6,
+        cellPadding: 2,
         halign: "center",
         valign: "middle",
-        cellPadding: 3,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.2,
+        textColor: [0, 0, 0],
       },
       headStyles: {
-        fillColor: [230, 230, 230],
+        fillColor: [220, 220, 220],
         textColor: [0, 0, 0],
         fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+        lineWidth: 0.3,
+        lineColor: [0, 0, 0],
       },
       margin: { left: margin, right: margin },
       didDrawPage: (data) => {
