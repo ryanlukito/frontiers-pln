@@ -38,11 +38,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const pdfRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/export-pdf`);
-    if (!pdfRes.ok) {
-      return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
-    }
-    const pdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+    // const pdfRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/export-pdf`);
+    // if (!pdfRes.ok) {
+    //   return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
+    // }
+    // const pdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
 
     // === Send message to each chatId ===
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       chatIds.map((chatId) => {
         const fd = new FormData();
         fd.append("chat_id", String(chatId));
-        fd.append("document", new Blob([pdfBuffer]), "rekapitulasi.pdf");
+        // fd.append("document", new Blob([pdfBuffer]), "rekapitulasi.pdf");
 
         return fetch(sendDocumentUrl, { method: "POST", body: fd });
       })
